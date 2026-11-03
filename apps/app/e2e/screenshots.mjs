@@ -7,7 +7,6 @@ import { fileURLToPath } from "node:url"
 
 const out = process.argv[2]
 const root = join(dirname(fileURLToPath(import.meta.url)), "../../..")
-const designDir = join(root, "docs/design/screens")
 const css = readFileSync(join(root, "docs/design/personal.css"), "utf8")
 const browser = await chromium.launch()
 
