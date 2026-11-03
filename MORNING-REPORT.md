@@ -12,9 +12,9 @@
 
 ## What you need to do (about 5 minutes)
 1. **Let Cloudflare host Workers.** Open dash.cloudflare.com → **Workers & Pages** once. That creates the account's free `workers.dev` subdomain, which Cloudflare requires before the first deploy. Claude Code's safety check stopped me from doing it myself.
-2. **Deploy.** Tell me "deploy", or run this from the `personal` folder:
-   `bash apps/api/scripts/first-deploy.sh`
-   It builds the app, uploads it, sets the server secrets and connects `notes.muhammadbniu.com`.
+2. **Deploy.** Either run `bash apps/api/scripts/first-deploy.sh` from the `personal` folder, or deploy from GitHub with Cloudflare Workers Builds:
+   - In the Worker's Settings → Build, set **Deploy command** to `pnpm --filter api run deploy` and leave the root directory empty. Build command: `pnpm run build`.
+   - After the first build succeeds, set the server secrets once from the `personal` folder: `cd apps/api && npx wrangler secret bulk .prod.worker-secrets.json`. Secrets carry over to later deploys.
 3. **On your iPhone:**
    - Open https://notes.muhammadbniu.com in Safari → Share → **Add to Home Screen**.
    - Open it from the Home Screen icon and sign in with **muhammadbniu@gmail.com**. It's the only email allowed to sign up.
