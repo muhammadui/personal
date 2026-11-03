@@ -1,0 +1,11 @@
+export type NavPath =
+  | "/"
+  | "/upcoming"
+  | "/flagged"
+  | "/completed"
+  | "/lists"
+  | "/notes"
+  | "/notifications"
+  | "/settings"
+  | "/trash"
+  | "/search"

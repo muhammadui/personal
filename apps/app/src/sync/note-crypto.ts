@@ -49,7 +49,7 @@ export async function decryptBytes(key: CryptoKey, data: Uint8Array): Promise<Ui
   const iv = data.subarray(MAGIC.length, MAGIC.length + 12)
   const ct = data.subarray(MAGIC.length + 12)
   try {
-    return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct))
+    return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv as BufferSource }, key, ct as BufferSource))
   } catch {
     throw new WrongPinError("Wrong PIN or damaged note")
   }

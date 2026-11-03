@@ -8,7 +8,6 @@ import { z } from "zod"
 const iso = z.iso.datetime({ offset: true })
 const isoNullable = iso.nullable()
 const uuid = z.uuid()
-const uuidNullable = uuid.nullable()
 const shortText = (max: number) => z.string().max(max)
 const colour = z.string().max(32).nullable()
 const sortOrder = z.number().finite()

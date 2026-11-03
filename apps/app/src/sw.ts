@@ -21,7 +21,7 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL("/index.html"), { deny
 type PushData = { title?: string; body?: string; url?: string; tag?: string }
 
 self.addEventListener("push", (event) => {
-  let data: PushData = {}
+  let data: PushData
   try {
     data = event.data ? (event.data.json() as PushData) : {}
   } catch {

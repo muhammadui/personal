@@ -1,0 +1,29 @@
+/* Copied verbatim from docs/design/personal.css (:root and [data-theme="dark"]). Do not edit by hand. */
+:root{
+--brand-blue:#3640DB;--brand-blue-hover:#2A33B8;--brand-navy:#0E1446;--brand-lavender:#B9BEF7;
+--tint-blue:#EEF0FD;--text-accent:#3640DB;
+--canvas:#F7F8FC;--surface:#FFFFFF;--surface-sunken:#F1F2F8;
+--line:#E4E6F0;--line-control:#868CA6;
+--ink:#12152B;--ink-secondary:#33384F;--ink-muted:#5B6078;--ink-faint:#6B7089;--ink-on-brand:#FFFFFF;
+--warn:#B45309;--warn-tint:#FDF1E4;--warn-ink:#8A4A0B;
+--success:#1F7A4D;--success-tint:#E6F4EC;--danger:#C2262E;--danger-tint:#FDECEC;
+--note-lilac:#EEF0FD;--note-sand:#FBF0E2;--note-mint:#E5F3EB;
+--scrim:rgba(11,14,36,.48);--ring:rgba(54,64,219,.18);
+--font-sans:"Plus Jakarta Sans",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,monospace;
+--radius-xs:2px;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--radius-xl:12px;--radius-full:999px;
+--shadow-sm:0 1px 2px rgba(14,20,70,.06);--shadow-md:0 4px 14px rgba(14,20,70,.08);--shadow-lg:0 16px 40px rgba(14,20,70,.18);
+--dur-instant:80ms;--dur-fast:140ms;--dur-base:200ms;--dur-slow:280ms;--dur-deliberate:480ms;
+--ease-standard:cubic-bezier(.2,0,0,1);--ease-enter:cubic-bezier(0,0,.2,1);--ease-exit:cubic-bezier(.4,0,1,1);--ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+[data-theme="dark"]{
+--brand-blue:#4F58EC;--brand-blue-hover:#6870F2;--brand-navy:#1B2048;--brand-lavender:#B9BEF7;
+--tint-blue:#1F2560;--text-accent:#A9AFF7;
+--canvas:#0B0E24;--surface:#141838;--surface-sunken:#1B2048;
+--line:#272D5C;--line-control:#6F76A3;
+--ink:#F2F3FA;--ink-secondary:#C9CCE0;--ink-muted:#A3A8C6;--ink-faint:#8A90B3;
+--warn:#F2A65A;--warn-tint:#3A2614;--warn-ink:#F7C48E;
+--success:#5CC98E;--success-tint:#12301F;--danger:#F07178;--danger-tint:#3A1418;
+--note-lilac:#1F2560;--note-sand:#2E2318;--note-mint:#14291E;
+--scrim:rgba(0,0,0,.6);--ring:rgba(169,175,247,.28);
+--shadow-sm:0 1px 2px rgba(0,0,0,.3);--shadow-md:0 4px 14px rgba(0,0,0,.35);--shadow-lg:0 16px 40px rgba(0,0,0,.5);
+}
