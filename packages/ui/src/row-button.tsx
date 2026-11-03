@@ -5,6 +5,8 @@ import { cx } from "./cx"
 export type RowButtonProps = {
   icon?: ReactNode
   label: ReactNode
+  /** Second line under the label. */
+  detail?: ReactNode
   value?: ReactNode
   onClick?: () => void
   chevron?: boolean
@@ -13,7 +15,7 @@ export type RowButtonProps = {
 }
 
 /** A list row used as a button: icon, label, value on the right, chevron (task detail, settings). */
-export function RowButton({ icon, label, value, onClick, chevron = true, accent = false, className }: RowButtonProps) {
+export function RowButton({ icon, label, detail, value, onClick, chevron = true, accent = false, className }: RowButtonProps) {
   return (
     <button type="button" className={cx("task row-btn", className)} style={{ minHeight: 52, color: accent ? "var(--text-accent)" : undefined }} onClick={onClick}>
       {icon ? <span className="flex" style={{ color: "var(--ink-muted)" }}>{icon}</span> : null}
@@ -21,6 +23,7 @@ export function RowButton({ icon, label, value, onClick, chevron = true, accent 
         <span className="t-body-strong" style={{ fontWeight: accent ? 700 : 600 }}>
           {label}
         </span>
+        {detail ? <span className="task-meta">{detail}</span> : null}
       </span>
       {value !== undefined ? (
         <span className="t-meta" style={{ color: "var(--ink-secondary)" }}>

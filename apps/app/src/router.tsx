@@ -15,6 +15,7 @@ import { SettingsPage } from "./routes/settings-page"
 import { TodayPage } from "./routes/today-page"
 import { TrashPage } from "./routes/trash-page"
 import { UpcomingPage } from "./routes/upcoming-page"
+import { WelcomePage } from "./routes/welcome-page"
 
 const rootRoute = createRootRoute({ component: RootLayout, notFoundComponent: NotFoundPage })
 
@@ -36,6 +37,8 @@ const trashRoute = createRoute({ getParentRoute: () => rootRoute, path: "/trash"
 const notificationsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/notifications", component: NotificationsPage })
 const settingsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/settings", component: SettingsPage })
 const searchRoute = createRoute({ getParentRoute: () => rootRoute, path: "/search", component: SearchPage })
+// Onboarding is drawn by RootLayout before sign-in; signed in, /welcome just goes to Today.
+const welcomeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/welcome", component: WelcomePage })
 const devUiRoute = createRoute({ getParentRoute: () => rootRoute, path: "/dev/ui", component: DevUiPage })
 const reminderRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -61,6 +64,7 @@ const routeTree = rootRoute.addChildren([
   settingsRoute,
   searchRoute,
   devUiRoute,
+  welcomeRoute,
   reminderRoute,
 ])
 

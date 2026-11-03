@@ -6,6 +6,7 @@ import { useSession } from "../data/session"
 import { useNow } from "../ui/hooks/use-now"
 import { useSettings } from "../ui/hooks/use-settings"
 import { PageHeader } from "../ui/page-header"
+import { DataSection } from "../ui/settings/data-section"
 import { DevicesSection } from "../ui/settings/devices-section"
 import { NotificationsSection } from "../ui/settings/notifications-section"
 import { saveSettings } from "../ui/settings/save-settings"
@@ -95,6 +96,10 @@ export function SettingsPage() {
           <SyncPanel timeZone={timeZone} />
           <DevicesSection now={now} timeZone={timeZone} />
         </section>
+
+        <div className="enter enter-7">
+          <DataSection />
+        </div>
 
         <SignOutButton />
       </div>

@@ -1,6 +1,7 @@
 import { Banner, Button, Chip, Sheet, TextInput } from "@personal/ui"
 import { Info } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useSettings } from "../hooks/use-settings"
 import { clockLabel, dateLabel } from "../format"
 import { addDaysYmd, fromUtcIso, todayYmd, toUtcIso, weekdayOf, type Ymd } from "./local-date"
 import { MonthCalendar } from "./month-calendar"
@@ -30,24 +31,49 @@ type Props = {
 const pad = (n: number) => String(n).padStart(2, "0")
 
 /** PhoneDatePicker: presets, month grid, time chips, reminder chips, plain summary, Save. */
+function parseTime(hhmm: string | undefined): Time {
+  const m = hhmm ? /^(\d{2}):(\d{2})$/.exec(hhmm) : null
+  const hour = m ? Number(m[1]) : 9
+  const minute = m ? Number(m[2]) : 0
+  return hour < 24 && minute < 60 ? { hour, minute } : { hour: 9, minute: 0 }
+}
+
 export function DueSheet({ open, onClose, timeZone, mode, title, initial, onSave }: Props) {
+  const { settings } = useSettings()
+  /** Settings → Default reminder time: used whenever a picked date needs a time. */
+  const dflt = parseTime(settings?.default_reminder_time)
   const now = new Date()
   const today = todayYmd(now, timeZone)
   const start = initial.dueAt ? fromUtcIso(initial.dueAt, timeZone) : null
   const [date, setDate] = useState<Ymd | null>(start?.date ?? (mode === "reminder" ? today : null))
-  const [time, setTime] = useState<Time | null>(start && (initial.hasTime || mode === "reminder") ? start.time : mode === "reminder" ? { hour: 9, minute: 0 } : null)
+  const [time, setTimeRaw] = useState<Time | null>(start && (initial.hasTime || mode === "reminder") ? start.time : mode === "reminder" ? dflt : null)
   const [custom, setCustom] = useState(false)
   const [reminder, setReminder] = useState<ReminderChoice>(initial.reminder)
   const [preset, setPreset] = useState<string | null>(null)
+  const [touched, setTouched] = useState(false)
+  const setTime = (t: Time | null) => {
+    setTouched(true)
+    setTimeRaw(t)
+  }
+
+  // The settings record can arrive after the sheet mounted; follow it until the time is picked.
+  const dfltKey = `${dflt.hour}:${dflt.minute}`
+  useEffect(() => {
+    if (touched || start || mode !== "reminder") return
+    const [h, m] = dfltKey.split(":").map(Number)
+    setTimeRaw({ hour: h!, minute: m! })
+    // `start` is derived from props on every render; only the default time matters here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dfltKey, open, touched, mode])
 
   const nowZ = fromUtcIso(now.toISOString(), timeZone).time
   const presets: { id: string; label: string; date: Ymd; time: Time }[] = []
   if (nowZ.hour < 18) presets.push({ id: "later", label: "Later today", date: today, time: { hour: 18, minute: 0 } })
-  presets.push({ id: "tomorrow", label: "Tomorrow", date: addDaysYmd(today, 1), time: { hour: 9, minute: 0 } })
+  presets.push({ id: "tomorrow", label: "Tomorrow", date: addDaysYmd(today, 1), time: dflt })
   const toSat = (6 - weekdayOf(today) + 7) % 7 || 7
-  presets.push({ id: "weekend", label: "This weekend", date: addDaysYmd(today, toSat), time: { hour: 9, minute: 0 } })
+  presets.push({ id: "weekend", label: "This weekend", date: addDaysYmd(today, toSat), time: dflt })
   const toMon = (8 - weekdayOf(today)) % 7 || 7
-  presets.push({ id: "next", label: "Next week", date: addDaysYmd(today, toMon), time: { hour: 9, minute: 0 } })
+  presets.push({ id: "next", label: "Next week", date: addDaysYmd(today, toMon), time: dflt })
 
   const dueAt = date ? toUtcIso(date, time, timeZone) : null
   const effectiveReminder: ReminderChoice = mode === "task" && (!dueAt || !time) ? "none" : reminder
@@ -144,7 +170,7 @@ export function DueSheet({ open, onClose, timeZone, mode, title, initial, onSave
             onClick={() => {
               setCustom(true)
               setPreset(null)
-              if (!time) setTime({ hour: 9, minute: 0 })
+              if (!time) setTime(dflt)
               if (!date) setDate(today)
             }}
           >

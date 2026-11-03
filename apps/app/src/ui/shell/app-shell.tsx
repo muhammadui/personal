@@ -3,6 +3,8 @@ import type { ReactNode } from "react"
 import { useReminderScheduler } from "../../reminders/scheduler"
 import { NotifyPermissionHost } from "../reminders/notify-permission-host"
 import { TaskSheetProvider } from "../tasks/task-sheet-provider"
+import { InstallPrompt } from "./install-prompt"
+import { KeyboardHost } from "./keyboard-host"
 import { MobileTabs } from "./mobile-tabs"
 import { QuickAddSheet } from "./quick-add-sheet"
 import { ReminderBanner } from "./reminder-banner"
@@ -38,6 +40,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SessionExpiredHost />
         <VerifyHost />
         <NotifyPermissionHost />
+        <KeyboardHost />
+        <InstallPrompt />
       </TaskSheetProvider>
     </ToastProvider>
   )

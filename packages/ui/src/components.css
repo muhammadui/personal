@@ -49,6 +49,7 @@
 .searchbox{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink-muted);transition:border-color var(--dur-fast),box-shadow var(--dur-fast)}
 .searchbox:focus-within{border-color:var(--brand-blue);box-shadow:0 0 0 3px var(--ring)}
 .searchbox input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 14px var(--font-sans);color:var(--ink)}
+.searchbox input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
 .code-input{display:flex;gap:8px}
 .code-cell{width:48px;height:56px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line-control);border-radius:var(--radius-md);background:var(--surface);font:800 24px/1 var(--font-sans);color:var(--ink)}
 .code-cell.is-filled{border-color:var(--ink)}.code-cell.is-active{border-color:var(--brand-blue);box-shadow:0 0 0 3px var(--ring)}
@@ -220,7 +221,7 @@ a.card:hover,.card-hover:hover{box-shadow:var(--shadow-md);border-color:var(--li
 @keyframes p-drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @keyframes p-page{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-.page-enter{animation:p-page var(--dur-base) var(--ease-enter) both}
+.page-enter{animation:p-page var(--dur-base) var(--ease-enter) backwards}
 .drop-in{animation:p-drop var(--dur-slow) var(--ease-enter) both}
 .tabbar-fixed{position:fixed;left:0;right:0;bottom:0;z-index:20;padding-bottom:max(8px,env(safe-area-inset-bottom))}
 .toast-region{position:fixed;z-index:40;left:16px;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none}
@@ -291,3 +292,25 @@ select.input{appearance:auto;padding-right:10px}
 .note-body .ProseMirror blockquote{border-left:2px solid var(--line-control);padding-left:12px;color:var(--ink-muted)}
 .note-body .ProseMirror hr{border:0;border-top:1px solid var(--line);margin:24px 0}
 .note-body .ProseMirror a{color:var(--text-accent)}
+/* Search result word marks (PhoneSearch.dc.html) */
+.search-hit{background:var(--tint-blue);color:var(--text-accent);border-radius:var(--radius-xs);padding:0 2px}
+/* Locked note card: placeholder lines instead of preview text (Notes.dc.html) */
+.lock-lines{display:flex;flex-direction:column;gap:7px;padding-top:4px}
+.lock-line{height:8px;border-radius:var(--radius-xs);background:var(--brand-lavender);opacity:.25}
+/* Version history picker (PhoneHistory.dc.html) */
+.version-pick{flex:0 0 auto;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:var(--radius-md);border:1px solid var(--line);background:var(--surface);text-align:left;cursor:pointer;font-family:var(--font-sans);transition:background-color var(--dur-fast),border-color var(--dur-fast)}
+.version-pick[aria-pressed="true"]{background:var(--tint-blue);border-color:var(--brand-blue)}
+.version-when{font:700 13px/18px var(--font-sans);color:var(--ink)}
+.version-dev{font:600 11px/14px var(--font-sans);color:var(--ink-muted)}
+/* Install guide step number (InstallPWA.dc.html) */
+.step-n{width:36px;height:36px;flex:0 0 36px;border-radius:var(--radius-md);background:var(--surface-sunken);color:var(--ink);display:flex;align-items:center;justify-content:center;font:800 14px/1 var(--font-sans)}
+/* Command palette and shortcuts dialogs: wider than .dialog, aligned like the designs */
+.overlay .dialog.palette{width:min(640px,calc(100% - 32px));top:min(120px,12vh);bottom:auto;margin:0 auto;max-height:calc(100dvh - min(120px,12vh) - 16px);display:flex;flex-direction:column;overflow:hidden}
+.palette-row{width:calc(100% - 16px);border:0;background:transparent;text-align:left;cursor:pointer}
+.overlay .dialog.shortcuts-dialog{width:min(760px,calc(100% - 32px));display:flex;flex-direction:column}
+.shortcut-row{display:flex;justify-content:space-between;align-items:center;min-height:36px;border-bottom:1px solid var(--line);gap:12px}
+.diff-added{background:var(--success-tint);color:var(--success);border-radius:var(--radius-xs);padding:0 3px;text-decoration:none}
+.diff-removed{background:var(--danger-tint);color:var(--danger);border-radius:var(--radius-xs);padding:0 3px;text-decoration:line-through}
+.install-tile{height:36px;border-radius:var(--radius-md);background:var(--ink-on-brand);opacity:.14}
+.install-tile.is-dim{opacity:.08}
+.splash-dot{width:6px;height:6px;border-radius:var(--radius-xs);background:var(--brand-lavender)}

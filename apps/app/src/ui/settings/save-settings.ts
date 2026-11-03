@@ -12,7 +12,7 @@ export async function saveSettings(
   store: Store,
   userId: string,
   current: Stored<"settings"> | undefined,
-  fields: Partial<Pick<Settings, "theme" | "timezone">>,
+  fields: Partial<Pick<Settings, "theme" | "timezone" | "default_reminder_time">>,
 ): Promise<void> {
   if (current) {
     await store.update("settings", current.id, fields)

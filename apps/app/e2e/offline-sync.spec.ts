@@ -8,6 +8,8 @@ const EMAIL = "e2e@example.com"
 const PASSWORD = "correct horse battery staple"
 
 async function signIn(page: Page) {
+  // A returning browser: onboarding already seen.
+  await page.addInitScript(() => localStorage.setItem("personal.onboarded", "2026-11-03"))
   await page.goto("/")
   await page.getByLabel("Email").first().fill(EMAIL)
   await page.getByLabel("Password").first().fill(PASSWORD)

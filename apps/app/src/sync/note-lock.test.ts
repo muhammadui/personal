@@ -73,6 +73,19 @@ describe("locked notes", () => {
     remote.close()
   }, 30_000)
 
+  it("locking blanks and trashes earlier plaintext version snapshots, on the server too", async () => {
+    const server = new FakeSyncServer()
+    const d = device(server, "versions")
+    const noteId = await addNote(d.store)
+    await d.store.create("note_versions", { note_id: noteId, snapshot: btoa(SECRET), reason: "hourly" })
+    await d.engine.syncNow()
+    await lockNote(d.store, (await d.db.notes.get(noteId))!, "2580")
+    await d.engine.syncNow()
+    const local = await d.db.note_versions.where("note_id").equals(noteId).toArray()
+    expect(local.every((v) => v.snapshot === "" && v.deleted_at)).toBe(true)
+    expect(JSON.stringify([...server.records.values()])).not.toContain(btoa(SECRET))
+  }, 30_000)
+
   it("removing the lock restores a normal note", async () => {
     const server = new FakeSyncServer()
     const d = device(server, "solo")

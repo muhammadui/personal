@@ -1,22 +1,31 @@
-import { Button, Card, Dialog, EmptyState, IconButton, SectionLabel, Sheet, SyncStatus } from "@personal/ui"
+import { Button, Card, Dialog, EmptyState, IconButton, SectionLabel, SyncStatus } from "@personal/ui"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { Bell, ChevronLeft, FileText, MoreHorizontal, Pin, PinOff, Star, Trash2 } from "lucide-react"
+import { Bell, ChevronLeft, FileText, Lock, MoreHorizontal, Pin, PinOff } from "lucide-react"
 import { useEffect, useState } from "react"
 import { cancelReminder, setReminder } from "../data/actions"
 import type { Stored } from "../data/db"
 import { activeReminderFor } from "../data/queries"
 import { useStore } from "../data/session"
 import { useLiveQuery } from "../data/use-live-query"
+import { lockNote, removeLock, unlockedKey } from "../sync/note-lock"
 import { dueLabel, editedLabel } from "../ui/format"
 import { useNow } from "../ui/hooks/use-now"
 import { useTimeZone } from "../ui/hooks/use-time-zone"
+import { LockSheet } from "../ui/notes/lock-sheet"
+import { LockedNote } from "../ui/notes/locked-note"
+import type { NoteApi } from "../ui/notes/note-body"
+import { NoteActionsSheet } from "../ui/notes/note-actions-sheet"
 import { NoteEditor } from "../ui/notes/note-editor"
+import { VersionHistory } from "../ui/notes/version-history"
 import { DueSheet } from "../ui/reminders/due-sheet"
 import { emitUi } from "../ui/shell/events"
 import { useToast } from "../ui/shell/toast-provider"
 import { useSyncLabel } from "../ui/shell/use-sync-label"
 
-/** PhoneEditor / Editor. */
+/** Let React unmount the editor (and its Y.Doc handle) before the stored updates are rewritten. */
+const nextTick = () => new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+/** PhoneEditor / Editor, with PhoneLocked in front of locked notes. */
 export function NotePage() {
   const { noteId } = useParams({ from: "/notes/$noteId" })
   const store = useStore()
@@ -28,6 +37,14 @@ export function NotePage() {
   const [menu, setMenu] = useState(false)
   const [reminding, setReminding] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const [locking, setLocking] = useState(false)
+  const [unlockConfirm, setUnlockConfirm] = useState(false)
+  const [history, setHistory] = useState(false)
+  const [api, setApi] = useState<NoteApi | null>(null)
+  /** The note key while a locked note is open. Forgotten when the app is hidden. */
+  const [key, setKey] = useState<CryptoKey | undefined>(() => unlockedKey(noteId))
+  /** True while the lock is being added or removed; the editor is unmounted meanwhile. */
+  const [changingLock, setChangingLock] = useState(false)
   const note = useLiveQuery<Stored<"notes"> | null | undefined>(async () => (await store.db.notes.get(noteId)) ?? null, [store, noteId], undefined)
   const reminder = useLiveQuery(() => activeReminderFor(store.db, noteId), [store, noteId], undefined)
 
@@ -37,6 +54,14 @@ export function NotePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store, note?.id])
 
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") setKey(undefined)
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+    return () => document.removeEventListener("visibilitychange", onVisibility)
+  }, [])
+
   if (note === undefined) return null
   if (note === null || note.deleted_at) {
     return (
@@ -44,6 +69,45 @@ export function NotePage() {
         Restore it from Trash if you need it back.
       </EmptyState>
     )
+  }
+
+  if (note.locked && !key && !changingLock) return <LockedNote note={note} onUnlock={setKey} />
+
+  const lock = async (pin: string) => {
+    await api?.flush()
+    setChangingLock(true)
+    await nextTick()
+    try {
+      const fresh = await store.db.notes.get(note.id)
+      if (!fresh) throw new Error("Note not found")
+      const k = await lockNote(store, fresh, pin)
+      // Older versions are plaintext snapshots; a locked note keeps none.
+      setKey(k)
+      setLocking(false)
+      showToast({ message: "Note locked" })
+    } finally {
+      setChangingLock(false)
+    }
+  }
+
+  const unlockForGood = async () => {
+    if (!key) return
+    setUnlockConfirm(false)
+    await api?.flush()
+    setChangingLock(true)
+    await nextTick()
+    try {
+      const fresh = await store.db.notes.get(note.id)
+      if (!fresh) throw new Error("Note not found")
+      await removeLock(store, fresh, key)
+      setKey(undefined)
+      showToast({ message: "Lock removed" })
+    } catch (e) {
+      console.error("Could not remove lock", e)
+      showToast({ message: "Couldn't remove the lock. Try again." })
+    } finally {
+      setChangingLock(false)
+    }
   }
 
   const remove = async () => {
@@ -66,6 +130,11 @@ export function NotePage() {
           </button>
           <span className="flex-1" />
           <span className="mr-1">{saved}</span>
+          {note.locked ? (
+            <span className="flex px-1" style={{ color: "var(--ink-muted)" }} title="Locked note" aria-label="Locked note" role="img">
+              <Lock size={18} strokeWidth={2} aria-hidden />
+            </span>
+          ) : null}
           <IconButton plain large label={note.pinned ? "Unpin" : "Pin"} onClick={() => void store.update("notes", note.id, { pinned: !note.pinned })} style={note.pinned ? { color: "var(--text-accent)" } : undefined}>
             {note.pinned ? <Pin size={20} strokeWidth={2} aria-hidden /> : <PinOff size={20} strokeWidth={2} aria-hidden />}
           </IconButton>
@@ -81,7 +150,7 @@ export function NotePage() {
           </Button>
         </header>
         <span className="t-meta">{editedLabel(note.updated_at, now, timeZone)}</span>
-        <NoteEditor noteId={note.id} />
+        {changingLock ? <p className="pt-6 text-base text-faint">{note.locked ? "Removing the lock…" : "Locking…"}</p> : <NoteEditor noteId={note.id} cryptoKey={note.locked ? key : undefined} onReady={setApi} />}
       </div>
 
       <aside aria-label="Note details" className="hidden w-[280px] shrink-0 flex-col gap-6 pt-16 md:flex">
@@ -122,39 +191,53 @@ export function NotePage() {
           } else if (reminder) void cancelReminder(store, reminder.id)
         }}
       />
-      <Sheet open={menu} onClose={() => setMenu(false)} label="Note actions">
-        <h2 className="t-title3">{note.title || "Untitled"}</h2>
-        <div className="list">
-          <button
-            type="button"
-            className="task row-btn"
-            style={{ minHeight: 52 }}
-            onClick={() => {
-              void store.update("notes", note.id, { favourite: !note.favourite })
-              setMenu(false)
-            }}
-          >
-            <Star size={20} strokeWidth={2} aria-hidden style={{ color: "var(--ink-muted)" }} />
-            <span className="t-body-strong" style={{ fontWeight: 600 }}>
-              {note.favourite ? "Remove from favourites" : "Add to favourites"}
-            </span>
-          </button>
-          <button
-            type="button"
-            className="task row-btn"
-            style={{ minHeight: 52, color: "var(--danger)" }}
-            onClick={() => {
-              setMenu(false)
-              setConfirming(true)
-            }}
-          >
-            <Trash2 size={20} strokeWidth={2} aria-hidden />
-            <span className="t-body-strong" style={{ fontWeight: 600 }}>
-              Delete note
-            </span>
-          </button>
-        </div>
-      </Sheet>
+      <NoteActionsSheet
+        open={menu}
+        onClose={() => setMenu(false)}
+        note={note}
+        api={api}
+        now={now}
+        timeZone={timeZone}
+        onHistory={() => {
+          setMenu(false)
+          setHistory(true)
+        }}
+        onLock={() => {
+          setMenu(false)
+          setLocking(true)
+        }}
+        onRemoveLock={() => {
+          setMenu(false)
+          setUnlockConfirm(true)
+        }}
+        onToggleFavourite={() => {
+          void store.update("notes", note.id, { favourite: !note.favourite })
+          setMenu(false)
+        }}
+        onDelete={() => {
+          setMenu(false)
+          setConfirming(true)
+        }}
+      />
+      <LockSheet open={locking} onClose={() => setLocking(false)} onLock={lock} />
+      <VersionHistory open={history} onClose={() => setHistory(false)} store={store} noteId={note.id} title={note.title} doc={api?.doc ?? null} timeZone={timeZone} />
+      <Dialog
+        open={unlockConfirm}
+        onClose={() => setUnlockConfirm(false)}
+        title="Remove the lock?"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setUnlockConfirm(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={() => void unlockForGood()}>
+              Remove lock
+            </Button>
+          </>
+        }
+      >
+        The note will open without a PIN on every device you're signed in on.
+      </Dialog>
       <Dialog
         open={confirming}
         onClose={() => setConfirming(false)}

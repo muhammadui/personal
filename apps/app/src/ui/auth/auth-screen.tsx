@@ -6,11 +6,12 @@ import { ForgotPasswordForm } from "./forgot-password-form"
 import { SignInForm } from "./sign-in-form"
 import { SignUpForm } from "./sign-up-form"
 
-type Mode = "sign-in" | "sign-up" | "forgot"
+export type AuthMode = "sign-in" | "sign-up" | "forgot"
+type Mode = AuthMode
 
 /** Signin / Signup / ForgotPassword. From 1024px the navy panel (AuthDesktop) sits on the left. */
-export function AuthScreen() {
-  const [mode, setMode] = useState<Mode>("sign-in")
+export function AuthScreen({ initialMode = "sign-in" }: { initialMode?: AuthMode }) {
+  const [mode, setMode] = useState<Mode>(initialMode)
   const [email, setEmail] = useState("")
   const [notice, setNotice] = useState<string | null>(null)
 

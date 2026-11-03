@@ -54,6 +54,13 @@ export async function lockNote(store: Store, note: Stored<"notes">, pin: string)
   const state = await readState(store, note.id)
   await replaceWithSnapshot(store, note.id, await encryptBytes(key, state))
   await store.update("notes", note.id, { locked: true, lock_salt: salt, lock_check: await makeLockCheck(key), plain_text: "" })
+  // Earlier version-history snapshots are plaintext: blank them (an ordinary synced field
+  // write, so the server copy is overwritten too) and move them to Trash.
+  const versions = await store.db.note_versions.where("note_id").equals(note.id).toArray()
+  for (const v of versions) {
+    if (v.snapshot !== "") await store.update("note_versions", v.id, { snapshot: "" })
+    if (!v.deleted_at) await store.remove("note_versions", v.id)
+  }
   unlocked.set(note.id, key)
   return key
 }
