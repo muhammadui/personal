@@ -81,6 +81,9 @@ export function createAuth(db: Db, email: EmailSender, config: AuthConfig) {
       database: { generateId: () => newId() },
       // Same-origin app: Lax keeps the cookie on top-level navigations and all API calls.
       defaultCookieAttributes: { sameSite: "lax" },
+      // Cloudflare sets cf-connecting-ip to the real client address (clients cannot forge it
+      // through Cloudflare). Without this, rate limiting falls back to one shared bucket.
+      ipAddress: { ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for"] },
     },
     emailAndPassword: {
       enabled: true,
