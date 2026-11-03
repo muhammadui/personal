@@ -4,6 +4,12 @@ Settled choices. Newest first. Do not reverse one without the owner's approval; 
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Component styles are the kit's `personal.css` component classes ported unchanged into `packages/ui/src/components.css`; React components emit those classes | Exact match with the approved designs instead of re-typing every value as utilities |
+| 2026-11-03 | Times show as 12-hour ("4:00 pm") in the user's timezone | Matches the design kit's copy |
+| 2026-11-03 | List colours are stored as token names (e.g. `note-lilac`) in `lists.colour`, never hex | Dark mode swaps the variables; no raw hex in data |
+| 2026-11-03 | Deleting a list moves its open tasks to Trash too; restoring the list restores the tasks deleted with it | Nothing becomes an orphan; everything stays restorable for 30 days |
+| 2026-11-03 | A reminder on a recurring task moves to the next occurrence at the same offset from the due time | Ticking a daily task keeps its reminder going |
+| 2026-11-03 | Routes: `/notes/$noteId`, task detail as a sheet/side panel, `/lists`, `/lists/$listId`, `/reminders/$occurrenceId` | TanStack Router path params; screens.md updated |
 | 2026-11-03 | Locked notes encrypt each Yjs update (AES-GCM, Argon2id key) and still merge; locking compacts all server history for the note into one encrypted snapshot | Supersedes the 'whole-blob LWW' rule: merging stays lossless and the server never keeps plaintext |
 | 2026-11-03 | UI follows the owner's design kit in `docs/design/` (tokens, components, motion, approved screens). Added `lucide-react` and self-hosted fonts (`@fontsource-variable/plus-jakarta-sans`, `@fontsource/jetbrains-mono`) | Owner-approved designs; fonts must work offline in the PWA |
 | 2026-11-03 | Hosting is $0 forever: Cloudflare Workers free plan (static app + API + Durable Objects) and Neon free plan (Postgres, Frankfurt). Supersedes "always-on container host" and "app on Vercel" | Owner budget is $0. Vercel Hobby cron is once a day (±59 min) so reminders cannot fire; Render free sleeps after 15 min; Fly has no free tier. Cloudflare free has Durable Objects, alarms, WebSockets and free static assets |

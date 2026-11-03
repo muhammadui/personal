@@ -60,6 +60,19 @@ describe("recurring tasks", () => {
   })
 })
 
+describe("recurring task reminders", () => {
+  it("move to the next occurrence at the same offset", async () => {
+    const { store, db } = device(new FakeSyncServer(), "solo")
+    const id = await addTask(store, { title: "Standup", dueAt: "2026-11-03T09:00:00.000Z", dueHasTime: true, recurrenceRule: "FREQ=DAILY" })
+    await setReminder(store, { type: "task", id, title: "Standup" }, "2026-11-03T08:45:00.000Z", TZ)
+    await completeTask(store, (await db.tasks.get(id))!, TZ)
+    const nextId = ids.nextRecurringTask(id, "2026-11-04T09:00:00.000Z")
+    const scheduled = (await db.reminders.toArray()).filter((r) => r.status === "scheduled")
+    expect(scheduled).toHaveLength(1)
+    expect(scheduled[0]).toMatchObject({ target_id: nextId, fire_at: "2026-11-04T08:45:00.000Z" })
+  })
+})
+
 describe("reminders", () => {
   it("Done on a task reminder acknowledges the occurrence and ticks the task", async () => {
     const { store, db } = device(new FakeSyncServer(), "solo")

@@ -70,6 +70,23 @@ export async function completeTask(store: Store, task: Stored<"tasks">, timeZone
     },
     nextId,
   )
+  // Carry an active reminder to the next occurrence at the same offset from the due time.
+  const reminder = (await store.db.reminders.where("target_id").equals(task.id).toArray()).find(
+    (r) => r.status === "scheduled" && !r.deleted_at && !r.recurrence_rule,
+  )
+  if (reminder) {
+    const offset = Date.parse(reminder.fire_at) - Date.parse(task.due_at)
+    await store.update("reminders", reminder.id, { status: "done" })
+    await store.create("reminders", {
+      target_type: "task",
+      target_id: nextId,
+      title: reminder.title,
+      fire_at: new Date(Date.parse(next) + offset).toISOString(),
+      timezone: reminder.timezone,
+      recurrence_rule: null,
+      status: "scheduled",
+    })
+  }
 }
 
 export async function reopenTask(store: Store, task: Stored<"tasks">): Promise<void> {

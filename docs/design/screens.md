@@ -15,7 +15,7 @@
 | Quick add | `PhoneCapture.dc.html` | Sheet from FAB (mobile), quick-add bar / `N` (desktop) | 1 |
 | Upcoming | `PhoneUpcoming.dc.html`, `Upcoming.dc.html` | `/upcoming` | 1 |
 | Notes | `PhoneNotes.dc.html`, `Notes.dc.html` | `/notes` | 1 |
-| Note editor | `PhoneEditor.dc.html`, `Editor.dc.html` | `/note?id=…` | 1 (pen, image, voice tools: phase 2) |
+| Note editor | `PhoneEditor.dc.html`, `Editor.dc.html` | `/notes/$noteId` | 1 (pen, image, voice tools: phase 2) |
 | Locked note | `PhoneLocked.dc.html` | Opening a locked note | 1 |
 | Search | `PhoneSearch.dc.html` | `/search` (mobile) | 1 |
 | Command palette | `Palette.dc.html` | `⌘K` (desktop) | 1 |
@@ -27,14 +27,14 @@
 | Forgot password | `ForgotPassword.dc.html` | `/forgot` | 1 |
 | Session expired | `SessionExpired.dc.html` | Sheet when the refresh token expired offline | 1 |
 | Create account (desktop) | `SignupDesktop.dc.html` | `/signup` at ≥1024px | 1 |
-| Task detail | `PhoneTask.dc.html`, `TaskPanel.dc.html` | `/task?id=…` (mobile page, desktop side panel) | 1 |
+| Task detail | `PhoneTask.dc.html`, `TaskPanel.dc.html` | Full-screen sheet on phones, side panel on desktop (opened from any task row) | 1 |
 | Due date and reminder picker | `PhoneDatePicker.dc.html` | Sheet from task detail / quick add | 1 |
 | Repeat picker | `PhoneRepeat.dc.html` | Sheet from task detail | 1 |
 | Snooze | `PhoneSnooze.dc.html` | Sheet from a fired reminder | 1 |
 | Note actions and export | `PhoneExport.dc.html` | Note "More" menu | 1 (export: 2) |
 | Version history | `PhoneHistory.dc.html` | From note actions | 1 |
 | Trash | `PhoneTrash.dc.html` | `/trash` | 1 |
-| Lists and folders | `PhoneLists.dc.html` | `/settings/lists` | 1 |
+| Lists and folders | `PhoneLists.dc.html` | `/lists` (and `/lists/$listId`) | 1 |
 | Handwriting mode | `PhoneDraw.dc.html`, `DesktopDraw.dc.html` | Pen tool in the editor | 2 |
 | Voice recording | `PhoneVoice.dc.html` | Mic tool in the editor | 2 |
 | Keyboard shortcuts | `Shortcuts.dc.html` | `?` on desktop | 1 |
