@@ -1,0 +1,32 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "personal",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "routes": [{ "pattern": "notes.muhammadbniu.com", "custom_domain": true }],
+  "assets": {
+    "directory": "../app/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "USER_HUB", "class_name": "UserHub" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["UserHub"] }],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "REPLACE_WITH_HYPERDRIVE_ID",
+      "localConnectionString": "postgres://personal_app:personal_app@localhost:54329/personal"
+    }
+  ],
+  "triggers": { "crons": ["17 3 * * *"] },
+  "observability": { "enabled": true },
+  "vars": {
+    "APP_URL": "https://notes.muhammadbniu.com",
+    "VAPID_SUBJECT": "mailto:muhammadbniu@gmail.com"
+  }
+}
