@@ -4,6 +4,7 @@ Settled choices. Newest first. Do not reverse one without the owner's approval; 
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Web Push sender written in-house (`apps/api/src/push/web-push.ts`): RFC 8291 aes128gcm + RFC 8292 VAPID with WebCrypto; dropped `@pushforge/builder` | That library only produces the legacy `aesgcm` encoding, which Apple's push service does not accept; Chop's `web-push` uses aes128gcm. Tests decrypt the payload as a browser would |
 | 2026-11-03 | Component styles are the kit's `personal.css` component classes ported unchanged into `packages/ui/src/components.css`; React components emit those classes | Exact match with the approved designs instead of re-typing every value as utilities |
 | 2026-11-03 | Times show as 12-hour ("4:00 pm") in the user's timezone | Matches the design kit's copy |
 | 2026-11-03 | List colours are stored as token names (e.g. `note-lilac`) in `lists.colour`, never hex | Dark mode swaps the variables; no raw hex in data |

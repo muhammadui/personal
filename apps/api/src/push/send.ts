@@ -1,4 +1,4 @@
-import { buildPushHTTPRequest } from "@pushforge/builder"
+import { buildPushRequest } from "./web-push"
 
 /**
  * Web Push sender (WebCrypto, runs on Workers). Mirrors the owner's Chop app
@@ -21,16 +21,13 @@ export async function sendPush(
   await Promise.all(
     subscriptions.map(async (sub) => {
       try {
-        const req = await buildPushHTTPRequest({
-          privateJWK: vapid.privateJwk,
-          subscription: { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          message: {
-            payload,
-            adminContact: vapid.subject,
-            options: { ttl: REMINDER_TTL_SECONDS, urgency: "high" },
-          },
-        })
-        const res = await fetchImpl(req.endpoint, { method: "POST", headers: req.headers, body: req.body })
+        const req = await buildPushRequest(
+          sub,
+          payload,
+          { privateJwk: JSON.parse(vapid.privateJwk) as JsonWebKey, subject: vapid.subject },
+          { ttl: REMINDER_TTL_SECONDS, urgency: "high" },
+        )
+        const res = await fetchImpl(req.url, req.init)
         if (res.status === 404 || res.status === 410) result.gone.push(sub.endpoint)
         else if (res.ok) result.sent += 1
         else {
