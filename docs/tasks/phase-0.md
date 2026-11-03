@@ -1,33 +1,35 @@
 # Phase 0 — Foundations
 
-Do tasks in order unless told otherwise. One task per session. Start each in plan mode. Tick the box only when every "Done when" item holds and `pnpm typecheck && pnpm lint && pnpm test` pass.
+Do tasks in order unless told otherwise. Start each in plan mode. Tick the box only when every "Done when" item holds and `pnpm typecheck && pnpm lint && pnpm test` pass.
+
+Night of 2026-11-03: the owner approved working through these without per-task plan approval (see `MORNING-REPORT.md`).
 
 - [ ] **P0-01 Scaffold the monorepo**
-  pnpm workspaces + Turborepo; TypeScript strict; ESLint + Prettier; Vitest; Playwright; GitHub Actions CI running typecheck, lint, test. Create `apps/app` (Vite + React + TanStack Router + Tailwind), `apps/api` (Hono), `packages/core`, `packages/ui`. Add `docker-compose.yml` with Postgres for local dev and `.env.example`.
-  Done when: `pnpm dev` starts app and api; CI is green on a pushed branch; the Commands section of CLAUDE.md is accurate.
+  pnpm workspaces + Turborepo; TypeScript strict; ESLint + Prettier; Vitest; Playwright; GitHub Actions CI running typecheck, lint, test. Create `apps/app` (Vite + React + TanStack Router + Tailwind), `apps/api` (Cloudflare Worker + Hono, wrangler), `packages/core`, `packages/ui`. `docker-compose.yml` with Postgres for local dev and `.env.example`.
+  Done when: `pnpm dev` starts app and api; CI config runs typecheck, lint, test; the Commands section of CLAUDE.md is accurate.
 
 - [ ] **P0-02 Shared schemas**
-  Zod schemas and TS types in `packages/core` for every table in `docs/data-model.md`, plus `Mutation`, push and pull payloads from `docs/sync.md`.
+  Zod schemas and TS types in `packages/core` for every synced table in `docs/data-model.md`, plus `Mutation`, `DocUpdate`, push and pull payloads from `docs/sync.md`.
   Done when: schemas exported; unit tests cover valid and invalid examples for each.
 
-- [ ] **P0-03 HLC**
-  `packages/core/hlc` per `docs/sync.md`: create, tick, receive, compare, serialise.
-  Done when: property tests prove monotonicity, correct ordering of serialised strings, and recovery from a clock 10 minutes fast.
+- [ ] **P0-03 HLC + merge rules**
+  `packages/core/hlc` per `docs/sync.md`: create, tick, receive, compare, serialise. `mergeMutation` / `mergeRemote` per-field LWW shared by client and server. Deterministic IDs (`packages/core/ids`).
+  Done when: property tests prove monotonicity, correct ordering of serialised strings, recovery from a clock 10 minutes fast, and that merging is order-independent and idempotent.
 
 - [ ] **P0-04 Database**
-  Drizzle schema + migrations for all server tables; `field_hlc` JSONB and `server_version` columns; row-level security policies; per-user `server_version` counter.
+  Drizzle schema + SQL migrations: Better Auth tables, `records`, `doc_updates`, `mutations`, `user_sync_state`; RLS policies; an app role that cannot bypass RLS.
   Done when: migrations run on a fresh Docker Postgres; a test proves user A cannot read or write user B's rows even with a query missing its `user_id` filter.
 
 - [ ] **P0-05 Auth**
-  Sign-up, login, refresh (rotation + reuse detection), logout, email verification code, password reset, devices list and remote sign-out, per `docs/auth.md`. Email sent through an interface with a console implementation in dev. Google sign-in can wait until Phase 1.
-  Done when: API tests cover every flow including token reuse revoking the session chain; sign-up creates settings + Inbox.
+  Better Auth in the Worker per `docs/auth.md`: allowlisted sign-up, sign-in with device-side Argon2id prehash + server HMAC, email OTP verification and password reset through Resend (console in dev), sign-out, list/revoke sessions. Sign-up creates settings + Inbox records.
+  Done when: API tests cover sign-up (allowed / not allowed), sign-in (right / wrong password), verification, reset (old password stops working), session revoke; sign-up creates settings + Inbox.
 
 - [ ] **P0-06 Local store**
-  Dexie database per user (`personal-<userId>`); tables mirror the data model plus `outbox` and `sync_state`; a repository layer where every write updates the record, its `field_hlc`, and appends a Mutation in ONE transaction.
+  Dexie database per user (`personal-<userId>`); typed tables plus `outbox`, `doc_updates`, `doc_outbox`, `sync_state`; a repository where every write updates the record, its `_hlc`, and appends a Mutation in ONE transaction.
   Done when: unit tests (fake-indexeddb) prove a failed write leaves neither record nor outbox entry.
 
 - [ ] **P0-07 Server sync**
-  `POST /sync/push` and `GET /sync/pull` exactly as in `docs/sync.md`: idempotency, per-field HLC last-write-wins, tombstones, version stamping, pagination, rejection handling.
+  `POST /api/sync/push` and `GET /api/sync/pull` per `docs/sync.md`: idempotency, per-field HLC LWW, tombstones, version stamping, pagination, rejection handling, doc updates and compaction.
   Done when: API tests cover duplicate batches, out-of-order arrival, delete vs edit, and pagination across 2,500 changes.
 
 - [ ] **P0-08 Client sync engine**
@@ -35,21 +37,21 @@ Do tasks in order unless told otherwise. One task per session. Start each in pla
   Done when: tests with a mocked server cover offline queueing, retry after network error, and resume after restart.
 
 - [ ] **P0-09 Yjs note doc sync**
-  y-indexeddb persistence on the client; `/sync/docs/:noteId` push and pull with state vectors; server-side merge and periodic compaction.
+  Local Yjs log in Dexie (same transaction as `doc_outbox`); doc updates in push/pull; snapshot compaction.
   Done when: two clients editing the same doc offline converge after sync in tests.
 
 - [ ] **P0-10 WebSocket pokes**
-  `GET /ws` authenticated by access token; server pokes a user's other devices after applied pushes and doc updates; client triggers pull on poke.
-  Done when: an integration test shows device B pulls within 2 s of device A's push.
+  `GET /api/ws` (session cookie) upgrades into the user's `UserHub` Durable Object; the server pokes the user's other devices after applied pushes; client triggers pull on poke.
+  Done when: a test shows a poke reaches device B after device A's push.
 
 - [ ] **P0-11 Convergence test rig (Gate 1)**
-  fast-check property test: 2–3 simulated devices + real server code against test Postgres; random ops (create, edit fields, delete, restore, note doc edits), random offline periods, random delivery order and duplicate deliveries.
-  Done when: 5,000 runs pass with identical final state on every device and the server; it runs in CI (fewer runs in CI is fine, full run via `pnpm test:convergence`).
+  fast-check property test: 2–3 simulated devices + real server sync code against test Postgres; random ops (create, edit fields, delete, restore, note doc edits), random offline periods, random delivery order and duplicate deliveries.
+  Done when: 5,000 runs pass with identical final state on every device and the server; a smaller run is part of `pnpm test`; full run via `pnpm test:convergence`.
 
-- [ ] **P0-12 Debug UI**
-  A plain screen (no design work) to sign up, sign in, create/edit/delete tasks and notes, see the outbox count, last sync time and online status, and edit a note body. For the owner to test by hand on Mac and iPhone.
-  Done when: owner can add a task offline in one browser and see it appear in another after reconnecting.
+- [ ] **P0-12 First usable app (replaces the plain debug screen)**
+  Sign-up/sign-in screens; Today, Inbox and lists with tasks (add, edit, due date, complete, delete, Trash); notes with the Tiptap + Yjs editor; sync status (outbox count, last sync, online); reminders with local scheduler and Web Push like Chop; notification bell.
+  Done when: owner can add a task offline in one browser and see it appear in another after reconnecting, and a reminder arrives on the locked iPhone.
 
-- [ ] **P0-13 PWA and desktop shells**
-  Web manifest + Workbox service worker (app loads with no network after first visit); Tauri 2 shell in `apps/app/src-tauri` that runs the same bundle; icons generated from `assets/brand/` (see `assets/README.md`).
-  Done when: the app opens offline as an installed PWA on Mac Chrome and iPhone Safari (home screen), and as a Tauri app on macOS.
+- [ ] **P0-13 PWA + deploy**
+  Web manifest + service worker (offline app shell + push); placeholder icons; deploy to `notes.muhammadbniu.com` (Worker + static assets + Durable Object + Hyperdrive → Neon Frankfurt).
+  Done when: the app opens offline as an installed PWA on Mac Chrome and iPhone Safari (home screen), served from `notes.muhammadbniu.com`.

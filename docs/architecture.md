@@ -1,41 +1,52 @@
 # Architecture
 
-Personal ships as a web app (PWA) and a standalone desktop app built from one React codebase. Both talk to one API, and each keeps a full local copy of the user's data. The local store is the centre of each client: the UI only talks to it, and the sync engine moves changes to and from the server in the background.
+Personal is a web app (PWA) built from one React codebase. It talks to one API, and each device keeps a full local copy of the user's data. The local store is the centre of each client: the UI only talks to it, and the sync engine moves changes to and from the server in the background.
+
+Everything runs at $0: Cloudflare Workers free plan and Neon free plan (see `decisions.md`).
 
 ## Components
-- Client (web and desktop, same code):
-  - Shared React UI
-  - Local store: IndexedDB (Dexie) for records, Yjs docs for note bodies, OPFS (web) / app-data files (desktop) for attachments, MiniSearch index
-  - Sync engine + outbox (in `packages/core`)
-  - Web only: service worker (offline app shell via Workbox, receives Web Push)
-  - Desktop only: Tauri shell (native notifications, tray, autostart, OS keychain, auto-update, local reminder scheduler)
-- Server:
-  - API (Hono on Node): auth, `/sync/*`, signed file URLs, WebSocket pokes
-  - Postgres (Neon, Frankfurt): source of server truth, row-level security, per-user `server_version`
-  - Worker (pg-boss on the same Postgres): reminder dispatch every minute, Web Push, emails, purge jobs
-  - Object storage (Cloudflare R2 or S3-compatible): images, audio, PDFs, export ZIPs
-- External: browser push services (Web Push / VAPID), transactional email provider
+- Client (browser / installed PWA):
+  - React UI
+  - Local store: IndexedDB (Dexie) for records, the outbox and the Yjs update log; MiniSearch index
+  - Sync engine + outbox (in `packages/core` and `apps/app/src/sync`)
+  - Service worker: offline app shell (Workbox precache) and Web Push (`push`, `notificationclick`), modelled on the owner's Chop app
+- Server: one Cloudflare Worker at `https://notes.muhammadbniu.com`
+  - Static assets: the built app (free and unlimited on Cloudflare)
+  - API under `/api/*` (Hono): Better Auth, `/api/sync/*`, push subscriptions, WebSocket upgrade
+  - `UserHub` Durable Object, one per user: holds that user's WebSockets (hibernation), keeps the user's reminder schedule, sets an alarm for the next due reminder, sends Web Push
+  - Postgres on Neon (Frankfurt), reached through Hyperdrive: auth tables, the generic `records` table, the Yjs update log, idempotency log, per-user `server_version`. Row-level security on every user table
+  - Daily cron trigger: purge tombstones older than 30 days
+- External: browser push services (Apple, Google, Mozilla) via VAPID; Resend for email from `no-reply@notes.muhammadbniu.com`
+
+## Why nothing polls the database
+Neon's free plan gives 100 CU-hours a month and sleeps after 5 minutes idle. A per-minute job would keep it awake about 730 hours a month. Reminders therefore live in each user's Durable Object (alarm at the next due time), so Neon only wakes when a device actually syncs.
+
+## Free-tier budget (whole Cloudflare account, shared with the owner's other projects)
+| Limit | Free | Personal's use |
+| --- | --- | --- |
+| Worker requests | 100,000/day | Sync calls; static assets don't count |
+| Worker CPU | 10 ms/request | No server-side password hashing or Yjs parsing |
+| Durable Object requests | 100,000/day | WebSocket messages count 1/20 |
+| Durable Object SQLite | 5 GB, 100k rows written/day | Reminder schedule + push subscriptions |
+| Hyperdrive | 100,000 queries/day | A push batch is ~6 queries, a pull is 1–2 |
+| Cron triggers | 5 per account | 1 (purge) |
+| Neon | 1 GB storage, 100 CU-hours/month | Compute capped at 0.25 CU |
+| Resend | 3,000 emails/month, 100/day | Verification and reset codes |
 
 ## Platforms
 | Platform | How it ships | Offline | System notifications |
 | --- | --- | --- | --- |
-| Web | Hosted site, installable PWA (Chrome, Edge, Safari) | Full after first load | Web Push when online |
-| macOS | Tauri `.dmg`, signed + notarised, auto-update | Full | Native, fired locally even offline |
-| Windows | Tauri `.msi` / `.exe`, auto-update | Full | Native, fired locally even offline |
-| Linux | AppImage, `.deb` | Full | Native, fired locally even offline |
-| iPhone / Android | The PWA added to the home screen | Full | Web Push (iPhone: only when added to home screen) |
-
-The desktop app can start at login and sit in the tray so reminders fire with the window closed.
+| Web | `notes.muhammadbniu.com`, installable PWA (Chrome, Edge, Safari) | Full after first load | Web Push |
+| iPhone / Android | The PWA added to the home screen | Full | Web Push (iPhone: only when added to home screen, iOS 16.4+) |
+| Desktop (Tauri) | Deferred | — | — |
 
 ## Repo layout
 ```
 apps/
   app/          React + Vite + TanStack Router + Tailwind (PWA)
-    src-tauri/  Tauri 2 desktop shell (Rust)
-  api/          Hono API, WebSocket, worker entry
-  site/         Next.js marketing site (later)
+  api/          Cloudflare Worker: Hono API, Better Auth, UserHub Durable Object, migrations
 packages/
-  core/         Zod schemas, types, HLC, sync protocol + engine, recurrence, reminders
+  core/         Zod schemas, types, HLC, merge rules, sync protocol, recurrence, reminder IDs
   ui/           Shared components
 docs/           This spec
 ```
@@ -46,34 +57,25 @@ docs/           This spec
 | Monorepo | pnpm workspaces + Turborepo |
 | Client UI | React, Vite, TypeScript (strict), Tailwind CSS, TanStack Router |
 | Editor | Tiptap (ProseMirror) + Yjs collaboration extension |
-| Handwriting (phase 2) | Canvas + Pointer Events (pressure, tilt) + perfect-freehand; strokes stored in the note's Yjs doc |
-| Local data | Dexie, Yjs + y-indexeddb, OPFS, MiniSearch |
-| PWA | Workbox service worker, web app manifest |
-| Desktop | Tauri 2 |
-| API | Node, Hono, Zod, Drizzle ORM |
-| Realtime | WebSocket pokes, polling fallback |
+| Local data | Dexie, Yjs, MiniSearch |
+| PWA | vite-plugin-pwa (Workbox, injectManifest) + web app manifest |
+| API | Cloudflare Workers, Hono, Zod, Drizzle ORM (postgres.js over Hyperdrive) |
+| Auth | Better Auth (self-hosted), Argon2id on device (hash-wasm) |
+| Realtime | WebSocket pokes through the `UserHub` Durable Object, 30 s polling fallback |
 | Database | Postgres on Neon (Frankfurt); Docker Postgres locally |
-| Jobs | pg-boss worker |
-| Push | Web Push with VAPID (`web-push`) |
-| Email | Transactional provider (Resend, Postmark or similar) |
-| Hosting | App: static on Vercel. API + WebSocket + worker: one always-on container host (Vercel functions cannot hold WebSockets or run a per-minute scheduler) |
-| Monitoring | Sentry |
+| Jobs | Durable Object alarms (reminders), one cron trigger (purge) |
+| Push | Web Push with VAPID, WebCrypto sender |
+| Email | Resend |
 | Tests | Vitest, fast-check, Playwright |
 
 ## API surface
 | Endpoint | Purpose |
 | --- | --- |
-| `POST /auth/signup`, `/auth/login`, `/auth/refresh`, `/auth/logout` | Account + session lifecycle |
-| `POST /auth/verify-email`, `/auth/forgot`, `/auth/reset` | Verification + recovery |
-| `GET /auth/google/start`, `/auth/google/callback` | Google sign-in |
-| `GET /devices`, `DELETE /devices/:id` | List / sign out devices |
-| `POST /sync/push` | Batch of mutations (see `sync.md`) |
-| `GET /sync/pull?since=` | Rows changed since a cursor |
-| `POST /sync/docs/:noteId`, `GET /sync/docs/:noteId?sv=` | Yjs updates up and down |
-| `POST /attachments/upload-url`, `GET /attachments/:id/url` | Signed URLs |
-| `POST /push/subscribe`, `DELETE /push/subscribe/:id` | Web Push registration |
-| `POST /reminders/:occurrenceId/ack` | Acknowledge from any device (also possible through sync) |
-| `GET /ws` | WebSocket pokes |
-| `POST /export`, `DELETE /account` | Export + account deletion |
+| `/api/auth/*` | Better Auth: sign-up, sign-in, sign-out, email OTP (verify, reset password), list/revoke sessions (= devices) |
+| `POST /api/sync/push` | Batch of record mutations and Yjs doc updates (see `sync.md`) |
+| `GET /api/sync/pull?since=` | Records and doc updates changed since a cursor |
+| `POST /api/push/subscribe`, `POST /api/push/unsubscribe` | Web Push registration per device |
+| `GET /api/ws` | WebSocket pokes |
+| `GET /api/health` | Health check |
 
 There are no per-entity REST endpoints for notes or tasks. Every data write goes through sync, so online and offline share one write path.

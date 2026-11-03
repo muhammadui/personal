@@ -1,22 +1,23 @@
 # Product
 
 ## What Personal is
-An offline-first notes and todo app for web and desktop. It combines a Samsung Notes-style notebook (rich text, handwriting, images, voice, locked notes, folders) with a real task manager (due dates, recurring tasks, reminders that notify).
+An offline-first notes and todo app for the web, installable on phones and computers as a PWA. It combines a Samsung Notes-style notebook (rich text, handwriting, images, voice, locked notes, folders) with a real task manager (due dates, recurring tasks, reminders that notify).
 
-Reference for the notes experience: Samsung Notes (handwriting with pens, pencils, highlighters and eraser; photos; voice recordings; locked notes; PDF annotation; sync across devices). Unlike Samsung Notes, Personal runs in any browser and as a desktop app, with open sign-up.
+Reference for the notes experience: Samsung Notes (handwriting with pens, pencils, highlighters and eraser; photos; voice recordings; locked notes; PDF annotation; sync across devices). Unlike Samsung Notes, Personal runs in any browser. It is open source (AGPL-3.0) and runs at $0 on Cloudflare and Neon free plans; the owner's instance is limited to an allowlist and anyone else can self-host.
 
 ## Goals
-- Every create, edit, delete and search works offline, on web and desktop.
+- Every create, edit, delete and search works offline.
 - A change on one device appears on the user's other online devices within a few seconds.
 - Reminders fire on time as an in-app alert and a system notification, even when the app is closed where the platform allows.
-- Anyone can create an account; each account's data is private to its owner.
-- One codebase serves the web app and the desktop app.
+- Each account's data is private to its owner. Sign-up on the owner's instance is allowlisted; anyone can self-host.
+- Hosting costs nothing.
 
 ## Non-goals for v1
 - Shared or collaborative notes between users (later phase).
 - Native iOS and Android apps. Phones use the PWA installed to the home screen.
 - Importing Samsung Notes `.sdocx` files.
 - Teams, workspaces or paid plans.
+- Desktop app (Tauri): deferred.
 
 ## Core use cases
 1. Capture fast: one shortcut, type or scribble; saved locally on every keystroke.
@@ -64,7 +65,7 @@ Reference for the notes experience: Samsung Notes (handwriting with pens, pencil
 | Reminder on task or note | One-off or recurring | 1 |
 | Snooze | 5 min, 15 min, 1 hour, tomorrow morning, custom | 1 |
 | Notification centre | Bell with fired reminders and sync notices, read/unread, synced | 1 |
-| System notifications | Web Push in browsers; native on desktop | 1 |
+| System notifications | Web Push (also when the app is closed or the phone is locked) | 1 |
 | Quiet hours | Silent during chosen hours; delivered to bell, shown after | 2 |
 
 ### Across the app

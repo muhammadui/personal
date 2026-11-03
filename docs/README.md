@@ -1,6 +1,6 @@
 # Personal — spec index
 
-Personal is an offline-first notes and todo app for web and desktop. Every action works with no network; changes sync across a user's devices when online.
+Personal is an offline-first notes and todo app for the web (installable PWA). Every action works with no network; changes sync across a user's devices when online.
 
 | Doc | Read it when |
 | --- | --- |
