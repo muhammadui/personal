@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import type { Stored } from "../../data/db"
 import { unlockNote, WrongPinError } from "../../sync/note-lock"
 import { MAX_PIN_LENGTH, MIN_PIN_LENGTH } from "./pin-length"
+import { haptic } from "../haptics"
 
 /** PhoneLocked: the note's title and a PIN pad. Nothing of the body is shown until the PIN is right. */
 export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock: (key: CryptoKey) => void }) {
@@ -14,6 +15,7 @@ export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock
   const [error, setError] = useState<string | null>(null)
 
   const change = useCallback((next: string) => {
+    haptic("tap")
     setError(null)
     setPin(next)
   }, [])
@@ -21,7 +23,9 @@ export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock
   // The PIN can be 4 to 8 digits and its length isn't stored, so the user taps OK (or Enter).
   const [attempt, setAttempt] = useState<string | null>(null)
   const submit = useCallback(() => {
-    if (pin.length >= MIN_PIN_LENGTH) setAttempt(pin)
+    if (pin.length < MIN_PIN_LENGTH) return
+    haptic("tap")
+    setAttempt(pin)
   }, [pin])
 
   useEffect(() => {
@@ -30,13 +34,16 @@ export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock
     setBusy(true)
     unlockNote(note, attempt).then(
       (key) => {
-        if (live) onUnlock(key)
+        if (!live) return
+        haptic("success")
+        onUnlock(key)
       },
       (e: unknown) => {
         if (!live) return
         setAttempt(null)
         setBusy(false)
         setPin("")
+        haptic("error")
         if (e instanceof WrongPinError) setError("Wrong PIN. Try again.")
         else {
           console.error("Could not unlock note", e)

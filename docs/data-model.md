@@ -14,7 +14,7 @@ Synced records exist as typed Dexie tables on each device and as rows of the gen
 | `tags` | name, colour | |
 | `note_tags`, `task_tags` | tag_id, note_id / task_id | join rows with their own IDs so they sync |
 | `attachments` | note_id, kind, mime, size_bytes, content_hash, storage_key, upload_state | phase 2 |
-| `reminders` | target_type (`task`/`note`), target_id, title, fire_at (ISO UTC), timezone, recurrence_rule, status (`scheduled`/`done`/`cancelled`) | title is copied from the target so push can show it |
+| `reminders` | target_type (`task`/`note`/`standalone`), target_id, title, body?, fire_at (ISO UTC), timezone, recurrence_rule, status (`scheduled`/`done`/`cancelled`), alerts_before? (minutes, ≤6), nag_every_min?, nag_count? | title is copied from the target so push can show it. A standalone reminder's target_id is its own id (a snooze copy keeps the original's id) |
 | `reminder_occurrences` | reminder_id, fire_at, acknowledged_at, acknowledged_action (`done`/`snoozed`/`dismissed`), acknowledged_device_id | id deterministic: `uuidv5(reminderId + ":" + fireAt)` |
 | `notifications` | kind (`reminder`/`sync`/`account`), title, body, link, read_at, occurrence_id | in-app notification centre |
 

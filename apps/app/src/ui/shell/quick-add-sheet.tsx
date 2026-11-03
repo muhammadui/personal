@@ -4,7 +4,7 @@ import { useNavigate, useRouterState } from "@tanstack/react-router"
 import { CalendarDays, Repeat, SignalHigh } from "lucide-react"
 import { useEffect, useState } from "react"
 import type { Task } from "@personal/core"
-import { addNote, addTask, setReminder } from "../../data/actions"
+import { addNote, addStandaloneReminder, addTask, setReminder } from "../../data/actions"
 import { inboxId } from "../../data/queries"
 import { useStore } from "../../data/session"
 import { openNoteDoc } from "../../sync/note-docs"
@@ -12,12 +12,16 @@ import { dueLabel, firstLine, fromInputValues, timeLabel, toInputValues } from "
 import { useLists } from "../hooks/use-lists"
 import { useTimeZone } from "../hooks/use-time-zone"
 import type { ReminderChoice } from "../reminders/due-sheet"
+import { draftProblem, draftToInput, newDraft, type ReminderDraft } from "../reminders/reminder-draft"
+import { ReminderForm } from "../reminders/reminder-form"
 import { reminderFireAt } from "../reminders/reminder-offset"
 import { OptionSheet } from "../tasks/option-sheet"
 import { repeatShort } from "../tasks/repeat-options"
 import { RepeatSheet } from "../tasks/repeat-sheet"
 import { emitUi, onUi } from "./events"
 import { insertFirstParagraph } from "./insert-first-paragraph"
+import { useToast } from "./toast-provider"
+import { haptic } from "../haptics"
 
 const PRIORITIES: { value: Task["priority"]; label: string }[] = [
   { value: "none", label: "None" },
@@ -26,28 +30,49 @@ const PRIORITIES: { value: Task["priority"]; label: string }[] = [
   { value: "high", label: "High" },
 ]
 
-/** PhoneCapture: the FAB (and desktop "Task" button) quick-add sheet for a task or a note. */
+type Kind = "task" | "note" | "reminder"
+
+/** PhoneCapture: the FAB (and desktop "Task" button) quick-add sheet for a task, a note or a reminder. */
 export function QuickAddSheet() {
   const store = useStore()
   const timeZone = useTimeZone()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const { lists } = useLists()
   const [open, setOpen] = useState(false)
-  const [kind, setKind] = useState<"task" | "note">("task")
+  const [kind, setKind] = useState<Kind>("task")
   const [text, setText] = useState("")
   const [reminder, setReminderChoice] = useState<ReminderChoice>("none")
   const [rule, setRule] = useState<string | null>(null)
   const [priority, setPriority] = useState<Task["priority"]>("none")
   const [picker, setPicker] = useState<null | "repeat" | "priority">(null)
+  const [draft, setDraft] = useState<ReminderDraft>(() => newDraft(new Date(), timeZone))
 
-  useEffect(() => onUi((e) => e.type === "quick-add" && setOpen(true)), [])
+  useEffect(
+    () =>
+      onUi((e) => {
+        if (e.type !== "quick-add") return
+        if (e.kind) setKind(e.kind)
+        // An untouched reminder follows the clock: the next full hour from now.
+        setDraft((d) => (d.title.trim() ? d : newDraft(new Date(), timeZone)))
+        setOpen(true)
+      }),
+    [timeZone],
+  )
 
   const now = new Date()
   const parsed = text.trim() ? parseQuickAdd(text, now, timeZone) : null
   const listMatch = /^\/lists\/([^/]+)$/.exec(pathname)
   const listId = listMatch ? listMatch[1] : null
   const listName = (listId ? lists.find((l) => l.id === listId) : lists.find((l) => l.is_inbox))?.name ?? "Inbox"
+  const reminderProblem = kind === "reminder" ? draftProblem(draft, now, timeZone) : null
+
+  const pickKind = (next: Kind) => {
+    // Text typed as a task carries over as the reminder's title.
+    if (next === "reminder" && !draft.title.trim() && text.trim()) setDraft({ ...draft, title: firstLine(text) })
+    setKind(next)
+  }
 
   const reset = () => {
     setText("")
@@ -55,6 +80,7 @@ export function QuickAddSheet() {
     setRule(null)
     setPriority("none")
     setKind("task")
+    setDraft(newDraft(new Date(), timeZone))
   }
   const close = () => {
     setOpen(false)
@@ -62,6 +88,16 @@ export function QuickAddSheet() {
   }
 
   const save = async () => {
+    haptic("success")
+    if (kind === "reminder") {
+      const input = draftToInput(draft, timeZone)
+      if (!input || reminderProblem) return
+      await addStandaloneReminder(store, input)
+      emitUi({ type: "notify-prompt", title: input.title, fireAt: input.fireAt })
+      close()
+      showToast({ message: "Reminder added" })
+      return
+    }
     if (kind === "note") {
       const id = await addNote(store)
       if (text.trim()) {
@@ -97,36 +133,41 @@ export function QuickAddSheet() {
           options={[
             { value: "task", label: "Task" },
             { value: "note", label: "Note" },
+            { value: "reminder", label: "Reminder" },
           ]}
-          onChange={setKind}
+          onChange={pickKind}
         />
-        <div className="flex flex-col gap-2">
-          <label className="sr-only" htmlFor="qa">
-            {kind === "task" ? "What do you need to do?" : "Start your note"}
-          </label>
-          <textarea
-            id="qa"
-            autoFocus
-            rows={2}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && kind === "task") {
-                e.preventDefault()
-                void save()
-              }
-            }}
-            placeholder={kind === "task" ? "Call mum tomorrow 6pm" : "Start writing"}
-            className="inline-input resize-none"
-            style={{ font: "700 22px/32px var(--font-sans)", minHeight: 64, color: "var(--ink)" }}
-          />
-          {kind === "task" ? (
-            <span className="t-meta fade-in flex items-center gap-1.5" key={parsed?.dueAt ?? "none"}>
-              <CalendarDays size={16} strokeWidth={2} aria-hidden />
-              {parsed?.dueAt ? `${dueLabel(parsed.dueAt, parsed.dueHasTime, now, timeZone)} · list ${listName}` : `No date · list ${listName}`}
-            </span>
-          ) : null}
-        </div>
+        {kind === "reminder" ? (
+          <ReminderForm value={draft} onChange={setDraft} timeZone={timeZone} now={now} autoFocus onSubmit={() => void save()} />
+        ) : (
+          <div className="flex flex-col gap-2">
+            <label className="sr-only" htmlFor="qa">
+              {kind === "task" ? "What do you need to do?" : "Start your note"}
+            </label>
+            <textarea
+              id="qa"
+              autoFocus
+              rows={2}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && kind === "task") {
+                  e.preventDefault()
+                  void save()
+                }
+              }}
+              placeholder={kind === "task" ? "Call mum tomorrow 6pm" : "Start writing"}
+              className="inline-input resize-none"
+              style={{ font: "700 22px/32px var(--font-sans)", minHeight: 64, color: "var(--ink)" }}
+            />
+            {kind === "task" ? (
+              <span className="t-meta fade-in flex items-center gap-1.5" key={parsed?.dueAt ?? "none"}>
+                <CalendarDays size={16} strokeWidth={2} aria-hidden />
+                {parsed?.dueAt ? `${dueLabel(parsed.dueAt, parsed.dueHasTime, now, timeZone)} · list ${listName}` : `No date · list ${listName}`}
+              </span>
+            ) : null}
+          </div>
+        )}
         {kind === "task" && parsed?.dueAt && parsed.dueHasTime ? (
           <div className="flex flex-col gap-2.5">
             <span className="t-label">Remind me</span>
@@ -153,8 +194,8 @@ export function QuickAddSheet() {
           <Button size="xl" className="flex-1" onClick={close}>
             Cancel
           </Button>
-          <Button variant="primary" size="xl" className="flex-[2]" disabled={kind === "task" && !parsed} onClick={() => void save()}>
-            {kind === "task" ? "Add task" : "Add note"}
+          <Button variant="primary" size="xl" className="flex-[2]" disabled={(kind === "task" && !parsed) || reminderProblem !== null} onClick={() => void save()}>
+            {kind === "task" ? "Add task" : kind === "note" ? "Add note" : "Add reminder"}
           </Button>
         </div>
         <p className="t-meta text-center" style={{ fontSize: 12 }}>

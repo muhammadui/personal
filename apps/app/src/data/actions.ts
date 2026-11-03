@@ -133,6 +133,44 @@ export async function setReminder(
   })
 }
 
+export type StandaloneReminderInput = {
+  title: string
+  body?: string | null
+  fireAt: string
+  timeZone: string
+  recurrenceRule?: string | null
+  /** Early alerts, minutes before the time. */
+  alertsBefore?: number[]
+  /** Repeat every N minutes after the time, `nagCount` more times, until Done. */
+  nagEveryMin?: number | null
+  nagCount?: number | null
+}
+
+function standaloneFields(input: StandaloneReminderInput) {
+  const before = [...new Set((input.alertsBefore ?? []).filter((m) => Number.isInteger(m) && m >= 1 && m <= 10_080))].sort((a, b) => b - a).slice(0, 6)
+  const nag = input.nagEveryMin && input.nagCount ? { nag_every_min: Math.min(240, Math.max(1, Math.round(input.nagEveryMin))), nag_count: Math.min(20, Math.max(1, Math.round(input.nagCount))) } : { nag_every_min: null, nag_count: null }
+  return {
+    title: input.title.trim().slice(0, 500) || "Reminder",
+    body: input.body?.trim() ? input.body.trim().slice(0, 2000) : null,
+    fire_at: new Date(input.fireAt).toISOString(),
+    timezone: input.timeZone,
+    recurrence_rule: input.recurrenceRule ?? null,
+    alerts_before: before.length ? before : null,
+    ...nag,
+  }
+}
+
+/** A reminder of its own (not on a task or note): "remind me about this at 4 pm". */
+export async function addStandaloneReminder(store: Store, input: StandaloneReminderInput): Promise<string> {
+  const id = newId()
+  return store.create("reminders", { target_type: "standalone", target_id: id, status: "scheduled", ...standaloneFields(input) }, id)
+}
+
+/** Edit a standalone reminder; it is scheduled again from the new time. */
+export async function updateStandaloneReminder(store: Store, id: string, input: StandaloneReminderInput): Promise<void> {
+  await store.update("reminders", id, { ...standaloneFields(input), status: "scheduled" })
+}
+
 export async function cancelReminder(store: Store, reminderId: string): Promise<void> {
   await store.update("reminders", reminderId, { status: "cancelled" })
 }
@@ -187,9 +225,13 @@ export async function acknowledgeOccurrence(
       target_type: reminder.target_type,
       target_id: reminder.target_id,
       title: reminder.title,
+      body: reminder.body ?? null,
       fire_at: new Date(opts.snoozeUntil).toISOString(),
       timezone: reminder.timezone,
       recurrence_rule: null,
+      // A snoozed reminder keeps repeating until Done, but has no early alerts.
+      nag_every_min: reminder.nag_every_min ?? null,
+      nag_count: reminder.nag_count ?? null,
       status: "scheduled",
     })
   }

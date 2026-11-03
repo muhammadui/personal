@@ -20,6 +20,9 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL("/index.html"), { deny
 
 type PushData = { title?: string; body?: string; url?: string; tag?: string }
 
+/** Reminder vibration (Android). iPhone uses the system's own notification haptics. Matches REMINDER_VIBRATION in ui/haptics.ts. */
+const VIBRATE = [200, 120, 200, 120, 200]
+
 self.addEventListener("push", (event) => {
   let data: PushData
   try {
@@ -27,8 +30,9 @@ self.addEventListener("push", (event) => {
   } catch {
     data = { title: "Personal", body: event.data ? event.data.text() : "" }
   }
-  const options: NotificationOptions & { renotify?: boolean } = {
+  const options: NotificationOptions & { renotify?: boolean; vibrate?: number[] } = {
     body: data.body ?? "",
+    vibrate: VIBRATE,
     icon: "/icon-192.png",
     badge: "/badge-96.png",
     tag: data.tag,
@@ -61,10 +65,11 @@ self.addEventListener("message", (event) => {
   event.waitUntil(
     self.registration.showNotification(msg.title ?? "Personal", {
       body: msg.body ?? "",
+      vibrate: VIBRATE,
       icon: "/icon-192.png",
       badge: "/badge-96.png",
       tag: msg.tag,
       data: { url: msg.url ?? "/" },
-    }),
+    } as NotificationOptions & { vibrate?: number[] }),
   )
 })

@@ -1,6 +1,6 @@
 import { Avatar, Button, Kbd, NavItem, SectionLabel, SyncStatus } from "@personal/ui"
 import { Link, useNavigate } from "@tanstack/react-router"
-import { CalendarDays, CircleCheck, FileText, Flag, Inbox, Plus, Search, Settings, Sun, Trash2 } from "lucide-react"
+import { BellRing, CalendarDays, CircleCheck, FileText, Flag, Inbox, Plus, Search, Settings, Sun, Trash2 } from "lucide-react"
 import type { ReactNode } from "react"
 import { addNote } from "../../data/actions"
 import { todayTasks } from "../../data/queries"
@@ -87,6 +87,7 @@ export function Sidebar() {
             )}
           />
         ) : null}
+        <Item to="/reminders" icon={<BellRing {...ICON} />} label="Reminders" />
         <Item to="/flagged" icon={<Flag {...ICON} />} label="Flagged" />
         <Item to="/completed" icon={<CircleCheck {...ICON} />} label="Completed" />
       </div>

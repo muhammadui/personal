@@ -2,6 +2,7 @@ import { Banner, Button, PinDots, PinPad, SegmentedControl, Sheet } from "@perso
 import { TriangleAlert } from "lucide-react"
 import { useEffect, useState } from "react"
 import { DEFAULT_PIN_LENGTH, PIN_LENGTHS, type PinLength } from "./pin-length"
+import { haptic } from "../haptics"
 
 type Step = "first" | "again"
 
@@ -33,10 +34,12 @@ export function LockSheet({ open, onClose, onLock }: { open: boolean; onClose: (
 
   const lock = async () => {
     if (pin !== first) {
+      haptic("error")
       setError("The PINs don't match. Try again.")
       setPin("")
       return
     }
+    haptic("success")
     setBusy(true)
     try {
       await onLock(pin)
@@ -85,6 +88,7 @@ export function LockSheet({ open, onClose, onLock }: { open: boolean; onClose: (
       <PinPad
         value={pin}
         onChange={(v) => {
+          haptic("tap")
           setError(null)
           setPin(v)
         }}

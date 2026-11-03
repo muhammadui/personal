@@ -1,6 +1,6 @@
 /** App-wide UI requests between parts of the shell that are not parent and child. */
 export type UiEvent =
-  | { type: "quick-add" }
+  | { type: "quick-add"; kind?: "task" | "note" | "reminder" }
   | { type: "session-expired" }
   | { type: "verify-email" }
   | { type: "notify-prompt"; title: string; fireAt: string }

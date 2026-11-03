@@ -1,6 +1,6 @@
 import { Chip, EmptyState, IconButton, List, RowButton, SectionLabel } from "@personal/ui"
 import { Link, useNavigate } from "@tanstack/react-router"
-import { Bell, CircleCheck, FileText, Flag, ListTodo, Lock, Search, Settings, SquareCheck, Trash2, X } from "lucide-react"
+import { Bell, BellRing, CircleCheck, FileText, Flag, ListTodo, Lock, Search, Settings, SquareCheck, Trash2, X } from "lucide-react"
 import { useDeferredValue, useState } from "react"
 import { useSearch } from "../data/use-search"
 import { dueLabel, relativeTime } from "../ui/format"
@@ -132,6 +132,7 @@ export function SearchPage() {
         <section className="enter enter-2 flex flex-col gap-2">
           <SectionLabel>Go to</SectionLabel>
           <List>
+            <RowButton icon={<BellRing {...ICON} />} label="Reminders" onClick={() => void navigate({ to: "/reminders" })} />
             <RowButton icon={<Flag {...ICON} />} label="Flagged" onClick={() => void navigate({ to: "/flagged" })} />
             <RowButton icon={<CircleCheck {...ICON} />} label="Completed" onClick={() => void navigate({ to: "/completed" })} />
             <RowButton icon={<ListTodo {...ICON} />} label="Lists" onClick={() => void navigate({ to: "/lists" })} />

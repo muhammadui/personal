@@ -111,9 +111,17 @@ export const attachmentSchema = z.strictObject({
 
 export const reminderSchema = z.strictObject({
   ...base,
-  target_type: z.enum(["task", "note"]),
+  /** "standalone": a reminder of its own (target_id = the first reminder of its chain). */
+  target_type: z.enum(["task", "note", "standalone"]),
   target_id: uuid,
   title: shortText(500),
+  /** What to be reminded about, shown under the title (standalone reminders). */
+  body: opt(shortText(2000)),
+  /** Early alerts, in minutes before fire_at (e.g. [10, 5]). */
+  alerts_before: opt(z.array(z.number().int().min(1).max(10_080)).max(6)),
+  /** After fire_at, alert again every `nag_every_min` minutes, `nag_count` more times, until Done. */
+  nag_every_min: opt(z.number().int().min(1).max(240)),
+  nag_count: opt(z.number().int().min(0).max(20)),
   fire_at: iso,
   timezone: shortText(64),
   recurrence_rule: opt(shortText(200)),

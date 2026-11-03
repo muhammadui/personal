@@ -6,6 +6,7 @@ import type { Stored } from "../../data/db"
 import { subtasks } from "../../data/queries"
 import { useStore } from "../../data/session"
 import { useLiveQuery } from "../../data/use-live-query"
+import { haptic } from "../haptics"
 
 export function SubtaskList({ parent, timeZone, onOpen }: { parent: Stored<"tasks">; timeZone: string; onOpen: (id: string) => void }) {
   const store = useStore()
@@ -39,7 +40,10 @@ export function SubtaskList({ parent, timeZone, onOpen }: { parent: Stored<"task
           const done = s.status === "done"
           return (
             <div key={s.id} className={`task ${done ? "is-done" : ""}`} style={{ minHeight: 48, padding: "4px 12px" }}>
-              <Checkbox checked={done} label={done ? `Mark "${s.title}" not done` : `Mark "${s.title}" done`} onToggle={() => void (done ? reopenTask(store, s) : completeTask(store, s, timeZone))} />
+              <Checkbox checked={done} label={done ? `Mark "${s.title}" not done` : `Mark "${s.title}" done`} onToggle={() => {
+                  if (!done) haptic("success")
+                  void (done ? reopenTask(store, s) : completeTask(store, s, timeZone))
+                }} />
               <button type="button" className="task-open" onClick={() => onOpen(s.id)}>
                 <span className="task-title" style={{ fontWeight: 500 }}>
                   {s.title || "Untitled"}

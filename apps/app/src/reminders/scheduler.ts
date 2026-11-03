@@ -1,10 +1,11 @@
-import { ids } from "@personal/core"
+import { alertBody, ids } from "@personal/core"
 import { liveQuery } from "dexie"
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { Stored } from "../data/db"
 import { useSession } from "../data/session"
+import { haptic } from "../ui/haptics"
 import type { Store } from "../data/store"
-import { formatClock, latestMissedPerReminder, pendingOccurrences, reminderLink, type Occurrence } from "./occurrences"
+import { formatClock, latestMissedPerReminder, pendingOccurrences, reminderLink, upcomingAlerts, type Occurrence } from "./occurrences"
 
 export type FiredReminder = { reminder: Stored<"reminders">; fireAt: string; occurrenceId: string; missed: boolean }
 
@@ -43,16 +44,17 @@ async function ensureNotification(store: Store, o: Occurrence, missed: boolean):
 }
 
 /** Show a system notification through the service worker, with the same tag Web Push uses. */
-async function showSystemNotification(o: Occurrence, missed: boolean): Promise<boolean> {
+async function showSystemNotification(o: Occurrence, missed: boolean, alert?: { offsetMin: number; key: string }): Promise<boolean> {
   if (typeof Notification === "undefined" || Notification.permission !== "granted" || !("serviceWorker" in navigator)) return false
   const reg = await navigator.serviceWorker.ready
   const time = formatClock(o.fireAt, o.reminder.timezone)
+  const line = missed ? `Missed at ${time}` : alertBody(alert?.offsetMin ?? 0, time)
   reg.active?.postMessage({
     type: "show-reminder",
     title: o.reminder.title,
-    body: missed ? `Missed at ${time}` : `Reminder · ${time}`,
+    body: [line, o.reminder.body].filter(Boolean).join("\n"),
     url: reminderLink(o),
-    tag: o.occurrenceId,
+    tag: alert?.key ?? o.occurrenceId,
   })
   return true
 }
@@ -71,12 +73,17 @@ export function useReminderScheduler(): { toast: FiredReminder | null; dismissTo
     let cancelled = false
     const currentTimers = timers.current
 
-    const fire = async (o: Occurrence, missed: boolean) => {
-      if (cancelled || shownOnThisDevice().has(o.occurrenceId)) return
-      markShown(o.occurrenceId)
-      await ensureNotification(store, o, missed)
+    const fire = async (o: Occurrence, missed: boolean, alert?: { offsetMin: number; key: string }) => {
+      const key = alert?.key ?? o.occurrenceId
+      if (cancelled || shownOnThisDevice().has(key)) return
+      // Done elsewhere since the timer was set: stay quiet.
+      if ((await store.db.reminder_occurrences.get(o.occurrenceId))?.acknowledged_at) return
+      markShown(key)
+      if (!alert || alert.offsetMin >= 0) await ensureNotification(store, o, missed)
       const hidden = typeof document !== "undefined" && document.visibilityState === "hidden"
-      if (hidden && (await showSystemNotification(o, missed))) return
+      if (hidden && (await showSystemNotification(o, missed, alert))) return
+      // App open: buzz with the in-app alert (Android; iPhone allows haptics only on a tap).
+      if (!missed) haptic("reminder")
       setToast({ reminder: o.reminder, fireAt: o.fireAt, occurrenceId: o.occurrenceId, missed })
     }
 
@@ -91,9 +98,9 @@ export function useReminderScheduler(): { toast: FiredReminder | null; dismissTo
         const missed = now - Date.parse(o.fireAt) > 2 * 60 * 1000
         void fire(o, missed)
       }
-      for (const o of pending) {
-        const delay = Date.parse(o.fireAt) - now
-        if (delay > 0) currentTimers.set(o.occurrenceId, setTimeout(() => void fire(o, false), delay))
+      for (const a of upcomingAlerts(reminders, acked, now)) {
+        const delay = Date.parse(a.at) - now
+        currentTimers.set(a.key, setTimeout(() => void fire(a, false, a), delay))
       }
     }
 

@@ -57,4 +57,61 @@ describe("reminder schedule (UserHub)", () => {
   it("formats the time in the reminder's timezone", () => {
     expect(formatTime("2026-11-03T15:00:00.000Z", "Africa/Lagos")).toBe("4:00 pm")
   })
+
+  describe("early alerts and repeats until Done", () => {
+    const at = "2026-11-03T16:00:00.000Z"
+    const nag = () => base({ fireAt: at, nextAt: at, targetType: "standalone", alerts: { alerts_before: [10, 5], nag_every_min: 5, nag_count: 2 } })
+    const run = (r: HubReminder, acked: Set<string>, sent: Set<string>, iso: string) => {
+      const res = collectDue([r], acked, sent, Date.parse(iso))
+      for (const d of res.due) sent.add(d.alertKey)
+      return { offsets: res.due.map((d) => d.offsetMin), next: res.updated[0] ?? r }
+    }
+
+    it("alerts 10 and 5 minutes before, at the time, then twice more, each once", () => {
+      let r = nag()
+      const sent = new Set<string>()
+      const acked = new Set<string>()
+      expect(nextAlarmAt([r], acked, sent)).toBe(Date.parse("2026-11-03T15:50:00.000Z"))
+      const steps: [string, number[]][] = [
+        ["2026-11-03T15:49:00.000Z", []],
+        ["2026-11-03T15:50:00.000Z", [-10]],
+        ["2026-11-03T15:55:00.000Z", [-5]],
+        ["2026-11-03T16:00:00.000Z", [0]],
+        ["2026-11-03T16:05:00.000Z", [5]],
+        ["2026-11-03T16:10:00.000Z", [10]],
+        ["2026-11-03T16:15:00.000Z", []],
+      ]
+      for (const [when, expected] of steps) {
+        const res = run(r, acked, sent, when)
+        expect(res.offsets, when).toEqual(expected)
+        r = res.next
+      }
+      expect(r.nextAt).toBeNull()
+      expect(nextAlarmAt([r], acked, sent)).toBeNull()
+    })
+
+    it("Done on any device stops the remaining repeats", () => {
+      let r = nag()
+      const sent = new Set<string>()
+      const acked = new Set<string>()
+      r = run(r, acked, sent, "2026-11-03T16:00:00.000Z").next
+      acked.add(ids.reminderOccurrence(r.id, at))
+      expect(nextAlarmAt([r], acked, sent)).toBeNull()
+      const res = run(r, acked, sent, "2026-11-03T16:05:00.000Z")
+      expect(res.offsets).toEqual([])
+      expect(res.next.nextAt).toBeNull()
+    })
+
+    it("a phone that wakes late gets the alerts it missed, not ones older than 24 h", () => {
+      const r = nag()
+      const res = run(r, new Set(), new Set(), "2026-11-03T16:07:00.000Z")
+      expect(res.offsets).toEqual([-10, -5, 0, 5])
+    })
+
+    it("a recurring reminder done early moves on to the next day", () => {
+      const r = base({ fireAt: at, nextAt: at, rule: "FREQ=DAILY", alerts: { alerts_before: [10] } })
+      const acked = new Set([ids.reminderOccurrence(r.id, at)])
+      expect(nextAlarmAt([r], acked, new Set())).toBe(Date.parse("2026-11-04T15:50:00.000Z"))
+    })
+  })
 })

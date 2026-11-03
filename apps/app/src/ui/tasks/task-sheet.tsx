@@ -21,6 +21,7 @@ import { OptionSheet } from "./option-sheet"
 import { repeatShort } from "./repeat-options"
 import { RepeatSheet } from "./repeat-sheet"
 import { SubtaskList } from "./subtask-list"
+import { haptic } from "../haptics"
 
 const PRIORITIES: { value: Task["priority"]; label: string }[] = [
   { value: "none", label: "None" },
@@ -121,7 +122,10 @@ export function TaskSheet({ taskId, onClose, onOpenTask }: Props) {
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 pt-1 pb-6 md:pt-5">
             <div className="enter flex items-start gap-3">
               <span style={{ marginTop: 2 }}>
-                <Checkbox checked={done} label={done ? "Mark not done" : "Mark done"} onToggle={() => void (done ? reopenTask(store, current) : completeTask(store, current, timeZone))} />
+                <Checkbox checked={done} label={done ? "Mark not done" : "Mark done"} onToggle={() => {
+                    if (!done) haptic("success")
+                    void (done ? reopenTask(store, current) : completeTask(store, current, timeZone))
+                  }} />
               </span>
               <EditableText
                 key={current.id}

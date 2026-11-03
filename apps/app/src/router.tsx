@@ -9,6 +9,7 @@ import { NotePage } from "./routes/note-page"
 import { NotesPage } from "./routes/notes-page"
 import { NotificationsPage } from "./routes/notifications-page"
 import { ReminderPage } from "./routes/reminder-page"
+import { RemindersPage } from "./routes/reminders-page"
 import { RootLayout } from "./routes/root-layout"
 import { SearchPage } from "./routes/search-page"
 import { SettingsPage } from "./routes/settings-page"
@@ -40,6 +41,12 @@ const searchRoute = createRoute({ getParentRoute: () => rootRoute, path: "/searc
 // Onboarding is drawn by RootLayout before sign-in; signed in, /welcome just goes to Today.
 const welcomeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/welcome", component: WelcomePage })
 const devUiRoute = createRoute({ getParentRoute: () => rootRoute, path: "/dev/ui", component: DevUiPage })
+const remindersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/reminders",
+  component: RemindersPage,
+  validateSearch: (search: Record<string, unknown>): { edit?: string } => (typeof search.edit === "string" ? { edit: search.edit } : {}),
+})
 const reminderRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/reminders/$occurrenceId",
@@ -65,6 +72,7 @@ const routeTree = rootRoute.addChildren([
   searchRoute,
   devUiRoute,
   welcomeRoute,
+  remindersRoute,
   reminderRoute,
 ])
 

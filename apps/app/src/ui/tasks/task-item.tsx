@@ -6,6 +6,7 @@ import { useStore } from "../../data/session"
 import { fromInputValues, isOverdue, toInputValues } from "../format"
 import { useToast } from "../shell/toast-provider"
 import { PriorityBadge, TaskMeta, type TaskMetaContext } from "./task-meta"
+import { haptic } from "../haptics"
 
 type Props = { task: Stored<"tasks">; ctx: TaskMetaContext; onOpen: (id: string) => void; selected?: boolean }
 
@@ -37,6 +38,7 @@ export function TaskItem({ task, ctx, onOpen, selected = false }: Props) {
       setPhase("idle")
       return
     }
+    haptic("success")
     setPhase("ticked")
     timers.current.push(
       window.setTimeout(() => setPhase("leaving"), TICK_MS),

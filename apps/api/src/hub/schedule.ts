@@ -1,4 +1,4 @@
-import { ids, nextOccurrence, type PulledRecord } from "@personal/core"
+import { ids, nextOccurrence, occurrenceAlerts, type AlertSettings, type PulledRecord } from "@personal/core"
 
 /**
  * Pure reminder scheduling used by the UserHub Durable Object (docs/reminders.md).
@@ -13,6 +13,8 @@ export type HubReminder = {
   active: boolean
   targetType: string
   targetId: string
+  body?: string | null
+  alerts?: AlertSettings
   /** Next occurrence not yet pushed; null when finished. */
   nextAt: string | null
 }
@@ -32,6 +34,12 @@ export function reminderFromRecord(rec: PulledRecord): Omit<HubReminder, "nextAt
     active: d.status === "scheduled" && !d.deleted_at,
     targetType: String(d.target_type ?? "task"),
     targetId: String(d.target_id ?? ""),
+    body: typeof d.body === "string" && d.body ? d.body : null,
+    alerts: {
+      alerts_before: Array.isArray(d.alerts_before) ? (d.alerts_before as unknown[]).filter((n): n is number => typeof n === "number") : null,
+      nag_every_min: typeof d.nag_every_min === "number" ? d.nag_every_min : null,
+      nag_count: typeof d.nag_count === "number" ? d.nag_count : null,
+    },
   }
 }
 
@@ -52,12 +60,14 @@ export function initialNextAt(r: Omit<HubReminder, "nextAt">, now: number): stri
   return at
 }
 
-export type DueOccurrence = { reminder: HubReminder; occurrenceId: string; fireAt: string }
+export type DueOccurrence = { reminder: HubReminder; occurrenceId: string; fireAt: string; offsetMin: number; alertKey: string }
+
+const alertsOf = (r: HubReminder, at: string) => occurrenceAlerts(r.id, at, r.alerts ?? {})
 
 /**
- * Collect occurrences that are due, and advance each reminder past them. Acknowledged
- * (done/snoozed elsewhere) and already-sent occurrences are skipped; very old ones are skipped
- * as missed.
+ * Collect alerts that are due, and advance each reminder past occurrences whose alerts are all
+ * over (or that were acknowledged). An acknowledged occurrence sends nothing more, so Done on
+ * one device stops the repeats everywhere. Sent and very old alerts are skipped.
  */
 export function collectDue(
   reminders: HubReminder[],
@@ -72,11 +82,18 @@ export function collectDue(
     let at: string | null = r.nextAt
     let changed = false
     let guard = 0
-    while (at && Date.parse(at) <= now && guard++ < 10_000) {
+    while (at && guard++ < 10_000) {
+      const alerts = alertsOf(r, at)
       const occurrenceId = ids.reminderOccurrence(r.id, at)
-      if (!acked.has(occurrenceId) && !sent.has(occurrenceId) && now - Date.parse(at) < MISSED_AFTER_MS) {
-        due.push({ reminder: r, occurrenceId, fireAt: at })
+      if (!acked.has(occurrenceId) && Date.parse(alerts[0]!.at) > now) break
+      if (!acked.has(occurrenceId)) {
+        for (const a of alerts) {
+          const t = Date.parse(a.at)
+          if (t <= now && !sent.has(a.key) && now - t < MISSED_AFTER_MS) due.push({ reminder: r, occurrenceId, fireAt: at, offsetMin: a.offsetMin, alertKey: a.key })
+        }
       }
+      const finished = acked.has(occurrenceId) || Date.parse(alerts[alerts.length - 1]!.at) <= now
+      if (!finished) break
       at = r.rule ? nextOccurrence(r.rule, at, r.timezone) : null
       changed = true
     }
@@ -85,12 +102,24 @@ export function collectDue(
   return { due, updated }
 }
 
-export function nextAlarmAt(reminders: HubReminder[]): number | null {
+/** The next moment an alert is due, or null. Acknowledged occurrences are skipped. */
+export function nextAlarmAt(reminders: HubReminder[], acked: Set<string> = new Set(), sent: Set<string> = new Set()): number | null {
   let min: number | null = null
   for (const r of reminders) {
-    if (!r.active || !r.nextAt) continue
-    const t = Date.parse(r.nextAt)
-    if (min === null || t < min) min = t
+    if (!r.active) continue
+    let at = r.nextAt
+    let guard = 0
+    while (at && guard++ < 1000) {
+      if (!acked.has(ids.reminderOccurrence(r.id, at))) {
+        const pending = alertsOf(r, at).find((a) => !sent.has(a.key))
+        if (pending) {
+          const t = Date.parse(pending.at)
+          if (min === null || t < min) min = t
+          break
+        }
+      }
+      at = r.rule ? nextOccurrence(r.rule, at, r.timezone) : null
+    }
   }
   return min
 }

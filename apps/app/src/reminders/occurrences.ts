@@ -1,4 +1,4 @@
-import { ids, nextOccurrence } from "@personal/core"
+import { ids, nextOccurrence, occurrenceAlerts } from "@personal/core"
 import type { Stored } from "../data/db"
 
 export type Occurrence = { reminder: Stored<"reminders">; fireAt: string; occurrenceId: string }
@@ -27,6 +27,34 @@ export function pendingOccurrences(reminders: Stored<"reminders">[], acked: Set<
     }
   }
   return out.sort((a, b) => a.fireAt.localeCompare(b.fireAt))
+}
+
+export type PendingAlert = Occurrence & { offsetMin: number; at: string; key: string }
+
+/**
+ * Every alert (early alerts, the time, repeats) of unacknowledged occurrences that is still to
+ * come within the next 24 hours. Pure, so it is tested directly.
+ */
+export function upcomingAlerts(reminders: Stored<"reminders">[], acked: Set<string>, now: number): PendingAlert[] {
+  const out: PendingAlert[] = []
+  for (const r of reminders) {
+    if (r.status !== "scheduled" || r.deleted_at) continue
+    let at: string | null = r.fire_at
+    let guard = 0
+    while (at && guard++ < 10_000) {
+      const alerts = occurrenceAlerts(r.id, at, r)
+      if (Date.parse(alerts[0]!.at) > now + HORIZON_MS) break
+      const occurrenceId = ids.reminderOccurrence(r.id, at)
+      if (!acked.has(occurrenceId)) {
+        for (const a of alerts) {
+          const t = Date.parse(a.at)
+          if (t > now && t <= now + HORIZON_MS) out.push({ reminder: r, fireAt: at, occurrenceId, offsetMin: a.offsetMin, at: a.at, key: a.key })
+        }
+      }
+      at = r.recurrence_rule ? nextOccurrence(r.recurrence_rule, at, r.timezone) : null
+    }
+  }
+  return out.sort((a, b) => a.at.localeCompare(b.at))
 }
 
 /** For a recurring reminder only the latest missed occurrence is worth showing. */

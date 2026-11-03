@@ -2,6 +2,7 @@ import { DurableObject } from "cloudflare:workers"
 import type { PulledRecord } from "@personal/core"
 import type { PushSubscriptionInput } from "../app"
 import { sendPush, type StoredSubscription } from "../push/send"
+import { alertBody } from "@personal/core"
 import { collectDue, formatTime, initialNextAt, nextAlarmAt, reminderFromRecord, type HubReminder } from "./schedule"
 
 export type HubEnv = {
@@ -74,12 +75,18 @@ export class UserHub extends DurableObject<HubEnv> {
         const base = reminderFromRecord(rec)
         const existing = this.loadReminder(rec.id)
         // Keep progress through a recurring series unless the time or rule changed.
-        const keep = existing && existing.fireAt === base.fireAt && existing.rule === base.rule && existing.active === base.active
+        const keep =
+          existing &&
+          existing.fireAt === base.fireAt &&
+          existing.rule === base.rule &&
+          existing.active === base.active &&
+          JSON.stringify(existing.alerts ?? {}) === JSON.stringify(base.alerts ?? {})
         const next: HubReminder = { ...base, nextAt: keep ? existing.nextAt : initialNextAt(base, now) }
         this.sql.exec("INSERT OR REPLACE INTO reminders (id, json) VALUES (?, ?)", rec.id, JSON.stringify(next))
         scheduleChanged = true
       } else if (rec.table === "reminder_occurrences" && rec.data.acknowledged_at) {
         this.sql.exec("INSERT OR IGNORE INTO acks (occurrence_id) VALUES (?)", rec.id)
+        scheduleChanged = true // stops any repeats still pending for it
       }
     }
     if (scheduleChanged) await this.setNextAlarm()
@@ -126,14 +133,15 @@ export class UserHub extends DurableObject<HubEnv> {
           subs,
           {
             title: d.reminder.title,
-            body: `Reminder · ${formatTime(d.fireAt, d.reminder.timezone)}`,
+            body: [alertBody(d.offsetMin, formatTime(d.fireAt, d.reminder.timezone)), d.reminder.body].filter(Boolean).join("\n").slice(0, 1000),
             url: `/reminders/${d.occurrenceId}?reminder=${d.reminder.id}&at=${encodeURIComponent(d.fireAt)}`,
-            tag: d.occurrenceId,
+            // A new tag per alert, so every early alert and repeat makes a sound.
+            tag: d.alertKey,
           },
           { privateJwk: this.env.VAPID_PRIVATE_JWK, subject: this.env.VAPID_SUBJECT ?? "mailto:muhammadbniu@gmail.com" },
         )
         for (const endpoint of result.gone) this.sql.exec("DELETE FROM subs WHERE endpoint = ?", endpoint)
-        this.sql.exec("INSERT OR IGNORE INTO sent (occurrence_id, sent_at) VALUES (?, ?)", d.occurrenceId, now)
+        this.sql.exec("INSERT OR IGNORE INTO sent (occurrence_id, sent_at) VALUES (?, ?)", d.alertKey, now)
       }
     }
     // Forget bookkeeping older than 7 days.
@@ -142,7 +150,9 @@ export class UserHub extends DurableObject<HubEnv> {
   }
 
   private async setNextAlarm() {
-    const at = nextAlarmAt(this.allReminders())
+    const acked = new Set(this.sql.exec<{ occurrence_id: string }>("SELECT occurrence_id FROM acks").toArray().map((r) => r.occurrence_id))
+    const sent = new Set(this.sql.exec<{ occurrence_id: string }>("SELECT occurrence_id FROM sent").toArray().map((r) => r.occurrence_id))
+    const at = nextAlarmAt(this.allReminders(), acked, sent)
     if (at === null) await this.ctx.storage.deleteAlarm()
     else await this.ctx.storage.setAlarm(Math.max(at, Date.now() + 1000))
   }

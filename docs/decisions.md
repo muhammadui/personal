@@ -40,3 +40,4 @@ Settled choices. Newest first. Do not reverse one without the owner's approval; 
 | 2026-11-03 | Postgres on Neon, Frankfurt | Same provider and region as owner's other projects |
 | 2026-11-03 | Reminders fire on every device locally AND via server Web Push, de-duplicated by deterministic occurrence ID | Works offline and with the browser closed |
 | 2026-11-03 | Locked-note PINs are 4–8 digits, chosen per note (4, 6 or 8; default 6); the length is not stored, so unlock has an OK key | Owner: 4 digits is not enough |
+| 2026-11-03 | Standalone reminders with early alerts and repeats until Done; alert schedule shared in packages/core | Owner request; one schedule so device and push agree |

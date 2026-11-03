@@ -8,6 +8,7 @@ import { ReminderCard } from "./reminder-card"
 import { finishReminder, snoozeReminder } from "./snooze"
 import { SnoozeOptions } from "./snooze-options"
 import { useOpenTarget } from "./use-open-target"
+import { haptic } from "../haptics"
 
 type Props = { open: boolean; onClose: () => void; reminder: Stored<"reminders">; fireAt: string; missed?: boolean; onDone?: () => void }
 
@@ -45,13 +46,14 @@ export function SnoozeSheet({ open, onClose, reminder, fireAt, missed = false, o
             onClose()
           }}
         >
-          {reminder.target_type === "note" ? "Open note" : "Open task"}
+          {reminder.target_type === "note" ? "Open note" : reminder.target_type === "standalone" ? "Edit" : "Open task"}
         </Button>
         <Button
           variant="primary"
           size="xl"
           className="flex-1"
           onClick={() => {
+            haptic("success")
             void finishReminder(store, reminder, fireAt, timeZone)
             finish()
           }}

@@ -13,6 +13,7 @@ import { ReminderCard } from "../ui/reminders/reminder-card"
 import { finishReminder, snoozeReminder } from "../ui/reminders/snooze"
 import { SnoozeOptions } from "../ui/reminders/snooze-options"
 import { useOpenTarget } from "../ui/reminders/use-open-target"
+import { haptic } from "../ui/haptics"
 
 /** Where a push notification tap lands: the reminder, snooze choices, Done and Open. */
 export function ReminderPage() {
@@ -47,6 +48,11 @@ export function ReminderPage() {
       <BackLink to="/" label="Today" />
       <PageHeader title="Reminder" />
       <ReminderCard title={reminder.title} fireAt={fireAt} timeZone={timeZone} />
+      {reminder.target_type === "standalone" && reminder.body ? (
+        <p className="t-body enter enter-1 m-0 whitespace-pre-wrap" style={{ color: "var(--ink-secondary)" }}>
+          {reminder.body}
+        </p>
+      ) : null}
       {handled ? (
         <EmptyState
           tone="success"
@@ -74,13 +80,14 @@ export function ReminderPage() {
           </div>
           <div className="enter enter-3 flex gap-2.5">
             <Button size="xl" className="flex-1" onClick={() => openTarget(reminder.target_type, reminder.target_id)}>
-              {reminder.target_type === "note" ? "Open note" : "Open task"}
+              {reminder.target_type === "note" ? "Open note" : reminder.target_type === "standalone" ? "Edit" : "Open task"}
             </Button>
             <Button
               variant="primary"
               size="xl"
               className="flex-1"
               onClick={() => {
+                haptic("success")
                 void finishReminder(store, reminder, fireAt, timeZone)
                 setResult("Done.")
               }}

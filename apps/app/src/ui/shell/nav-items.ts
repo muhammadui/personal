@@ -2,6 +2,7 @@ export type NavPath =
   | "/"
   | "/upcoming"
   | "/flagged"
+  | "/reminders"
   | "/completed"
   | "/lists"
   | "/notes"

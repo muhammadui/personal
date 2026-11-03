@@ -12,6 +12,13 @@ Push works exactly like the owner's Chop app (`../chop/frontend`: `public/sw.js`
 5. Device channel: while the app is open, the local scheduler sets timers for occurrences due in the next 24 hours. When one fires, the app shows it in the bell and, if the tab is hidden, as a system notification with the same `tag` (a duplicate replaces, never stacks).
 6. Done / Snooze / Open: tapping the notification opens the app on the item. Done and Snooze write `reminder_occurrences` through sync; other devices mark the bell item read on their next sync.
 
+## Alerts (early alerts and repeats)
+- Any reminder can have early alerts (`alerts_before`, minutes before the time, up to 6) and repeats (`nag_every_min`, `nag_count`): after the time it alerts again every N minutes, up to the count, until the occurrence is acknowledged. Done or Snooze on any device stops the rest.
+- The alert times come from `occurrenceAlerts` in `packages/core/src/alerts.ts`, used by both the device scheduler and `UserHub`, so both channels send the same alerts.
+- Each alert has its own key and notification tag (`<occurrenceId>@<offset>`; the alert at the time keeps the occurrence id), so every alert makes a sound instead of silently replacing the last one.
+- Standalone reminders (`target_type: "standalone"`): a reminder of its own, with a title and optional details, made from quick add and listed on `/reminders`.
+- Phone offline (data off) and app closed: nothing can alert at that moment, because a web app on iPhone cannot schedule notifications on the device itself. The push service holds each alert and delivers it as soon as the phone is back online (up to 24 h). With the app open, the device's own timers alert even offline.
+
 ## Rules
 - Occurrence ID: `uuidv5(reminderId + ":" + fireAtUtcISO)`. Devices and server compute it independently.
 - Snooze: acknowledges the current occurrence and creates a one-off reminder at the snooze time (5 min, 15 min, 1 hour, tomorrow 09:00, custom).

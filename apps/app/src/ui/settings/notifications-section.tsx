@@ -1,7 +1,9 @@
 import { Banner, List, SectionLabel, Switch } from "@personal/ui"
-import { Bell, Clock, Info } from "lucide-react"
+import { Bell, Clock, Info, Vibrate } from "lucide-react"
+import { useState } from "react"
 import { useSession } from "../../data/session"
 import { usePushNotifications } from "../../push/use-push"
+import { haptic, hapticsEnabled, setHapticsEnabled } from "../haptics"
 import { useSettings } from "../hooks/use-settings"
 import { saveSettings } from "./save-settings"
 
@@ -12,6 +14,7 @@ export function NotificationsSection() {
   const push = usePushNotifications()
   const { user, store } = useSession()
   const { settings } = useSettings()
+  const [vibration, setVibration] = useState(hapticsEnabled)
   const defaultTime = settings?.default_reminder_time ?? "09:00"
   const on = push.status === "subscribed"
   const canAsk = push.status === "ready"
@@ -39,6 +42,26 @@ export function NotificationsSection() {
             {detail ? <span className="task-meta">{detail}</span> : null}
           </span>
           <Switch label="Reminder notifications" checked={on} disabled={!canAsk && !on} onChange={(next) => (next && canAsk ? void push.enable() : undefined)} />
+        </div>
+        <div className="task" style={{ minHeight: 52 }}>
+          <span className="flex" style={{ color: "var(--ink-muted)" }}>
+            <Vibrate size={20} strokeWidth={2} aria-hidden />
+          </span>
+          <span className="task-body">
+            <span className="t-body-strong" style={{ fontWeight: 600 }}>
+              Vibration
+            </span>
+            <span className="task-meta">On this device, for taps and in-app reminders.</span>
+          </span>
+          <Switch
+            label="Vibration"
+            checked={vibration}
+            onChange={(next) => {
+              setHapticsEnabled(next)
+              setVibration(next)
+              if (next) haptic("success")
+            }}
+          />
         </div>
         <div className="task" style={{ minHeight: 52 }}>
           <span className="flex" style={{ color: "var(--ink-muted)" }}>
