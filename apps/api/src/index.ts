@@ -20,6 +20,8 @@ export type WorkerEnv = {
   VAPID_PRIVATE_JWK?: string
   VAPID_SUBJECT?: string
   DEV_TRUSTED_ORIGINS?: string
+  /** Local development only: "off" disables auth rate limiting. */
+  AUTH_RATE_LIMIT?: string
 }
 
 function hubFor(env: WorkerEnv): Hub {
@@ -47,6 +49,7 @@ export default {
       allowedEmails: parseAllowedEmails(env.ALLOWED_EMAILS),
       trustedOrigins: env.DEV_TRUSTED_ORIGINS ? env.DEV_TRUSTED_ORIGINS.split(",") : [],
       onUserDeleted: (userId) => hubFor(env).wipe(userId),
+      rateLimit: env.AUTH_RATE_LIMIT !== "off",
     })
     const app = createApp(() => ({
       db,

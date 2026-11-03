@@ -2,10 +2,12 @@
 APP_URL=http://localhost:5173
 BETTER_AUTH_SECRET=change-me-32-chars-minimum-random
 PASSWORD_PEPPER=change-me-32-chars-minimum-random
-ALLOWED_EMAILS=you@example.com
+ALLOWED_EMAILS=you@example.com,e2e@example.com
 # Leave empty to print emails to the console
 RESEND_API_KEY=
 # pnpm --filter api vapid:generate
 VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_JWK=
 DEV_TRUSTED_ORIGINS=http://localhost:5173,http://localhost:8787
+# Local development only; never set this in production
+AUTH_RATE_LIMIT=off
