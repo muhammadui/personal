@@ -1,0 +1,36 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:convergence": "CONVERGENCE_RUNS=5000 vitest run test/convergence.test.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "vapid:generate": "tsx scripts/vapid-generate.ts"
+  },
+  "dependencies": {
+    "@personal/core": "workspace:*",
+    "@pushforge/builder": "^2.0.5",
+    "better-auth": "^1.7.15",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.13.16",
+    "postgres": "^3.4.9",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261103.1",
+    "@types/node": "^24.0.0",
+    "drizzle-kit": "^0.31.11",
+    "fast-check": "^4.10.2",
+    "hash-wasm": "^4.12.0",
+    "tsx": "^4.20.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.156.2",
+    "yjs": "^13.6.33"
+  }
+}
