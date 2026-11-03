@@ -3,11 +3,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { authClient, currentUser, type AuthUser } from "../lib/auth-client"
 import { SyncEngine, type SyncStatus } from "../sync/engine"
 import { PersonalDb, deleteLocalData } from "./db"
+import { purgeLocalTombstones, updateWaitingNotice } from "./maintenance"
 import { Store } from "./store"
 
 const LAST_USER_KEY = "personal.user"
 
-export type Session = { user: AuthUser; store: Store; engine: SyncEngine }
+export type Session = { user: AuthUser; store: Store; engine: SyncEngine; stopMaintenance: () => void }
 type State = { status: "loading" } | { status: "signed-out" } | { status: "ready"; session: Session }
 
 type Ctx = {
@@ -42,7 +43,21 @@ async function openSession(user: AuthUser): Promise<Session> {
   localStorage.setItem(LAST_USER_KEY, JSON.stringify(user))
   // Ask the browser not to evict local data (docs/sync.md "Storage persistence").
   void navigator.storage?.persist?.().catch(() => false)
-  return { user, store, engine }
+  const maintain = () => {
+    void updateWaitingNotice(store, navigator.onLine).catch((e: unknown) => console.error("Waiting notice failed", e))
+  }
+  void purgeLocalTombstones(store).catch((e: unknown) => console.error("Local purge failed", e))
+  const timer = setInterval(maintain, 60_000)
+  const unsubscribe = engine.subscribe(maintain)
+  return {
+    user,
+    store,
+    engine,
+    stopMaintenance: () => {
+      clearInterval(timer)
+      unsubscribe()
+    },
+  }
 }
 
 /**
@@ -60,6 +75,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       return
     }
     current.current?.engine.stop()
+    current.current?.stopMaintenance()
     const session = await openSession(user)
     current.current = session
     setState({ status: "ready", session })
@@ -99,6 +115,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const session = current.current
     await authClient.signOut().catch(() => undefined)
     if (session) {
+      session.stopMaintenance()
       session.engine.stop()
       session.store.db.close()
       await deleteLocalData(session.user.id)
