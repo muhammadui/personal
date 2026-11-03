@@ -29,6 +29,7 @@ function hubFor(env: WorkerEnv): Hub {
     subscribe: (userId, input) => stub(userId).subscribe(input),
     unsubscribe: (userId, endpoint) => stub(userId).unsubscribe(endpoint),
     websocket: (userId, request) => stub(userId).fetch(request),
+    wipe: (userId) => stub(userId).wipe(),
   }
 }
 
@@ -45,6 +46,7 @@ export default {
       pepper: env.PASSWORD_PEPPER,
       allowedEmails: parseAllowedEmails(env.ALLOWED_EMAILS),
       trustedOrigins: env.DEV_TRUSTED_ORIGINS ? env.DEV_TRUSTED_ORIGINS.split(",") : [],
+      onUserDeleted: (userId) => hubFor(env).wipe(userId),
     })
     const app = createApp(() => ({
       db,

@@ -102,6 +102,13 @@ export class UserHub extends DurableObject<HubEnv> {
     this.sql.exec("DELETE FROM subs WHERE endpoint = ?", endpoint)
   }
 
+  /** Account deleted: forget everything this object holds. */
+  async wipe(): Promise<void> {
+    for (const ws of this.ctx.getWebSockets()) ws.close(1000, "account deleted")
+    await this.ctx.storage.deleteAlarm()
+    await this.ctx.storage.deleteAll()
+  }
+
   // --- Reminders -----------------------------------------------------------------------
 
   override async alarm(): Promise<void> {

@@ -22,6 +22,10 @@ export class FakeHub implements Hub {
   async unsubscribe(userId: string, endpoint: string) {
     this.subs = this.subs.filter((s) => !(s.userId === userId && s.input.subscription.endpoint === endpoint))
   }
+  wiped: string[] = []
+  async wipe(userId: string) {
+    this.wiped.push(userId)
+  }
   async websocket(): Promise<Response> {
     return new Response("no websockets in tests", { status: 501 })
   }
@@ -48,6 +52,7 @@ export function createTestServer(opts: { allowedEmails?: string[]; rateLimit?: b
       pepper: "test-pepper-test-pepper-test-pepper-123",
       allowedEmails: opts.allowedEmails ?? [],
       rateLimit: opts.rateLimit ?? false,
+      onUserDeleted: (userId) => hub.wipe(userId),
     },
   )
   const app = createApp(() => ({ db, auth, hub, vapidPublicKey: "test-vapid", defer: (p) => void deferred.push(p) }))

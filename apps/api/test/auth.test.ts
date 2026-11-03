@@ -125,3 +125,26 @@ describe("auth", () => {
     expect((await server.request("/api/sync/push", { method: "POST", body: "{}" })).status).toBe(401)
   })
 })
+
+describe("account deletion", () => {
+  it("deletes the account and every synced row, and wipes the user's hub", async () => {
+    const email = allowed[7]!
+    const { cookie, body } = await server.signUp(email, "delete me please")
+    const userId = body!.user!.id
+    const res = await server.request("/api/auth/delete-user", {
+      method: "POST",
+      cookie,
+      body: JSON.stringify({ password: prehash("delete me please") }),
+    })
+    expect(res.status).toBe(200)
+    const users = await server.db.sql`SELECT 1 FROM "user" WHERE id = ${userId}`
+    expect(users.length).toBe(0)
+    const rows = await server.db.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.user_id', ${userId}, true)`
+      return tx`SELECT 1 FROM records`
+    })
+    expect(rows.length).toBe(0)
+    expect(server.hub.wiped).toContain(userId)
+    expect((await server.signIn(email, "delete me please")).res.status).toBe(401)
+  })
+})

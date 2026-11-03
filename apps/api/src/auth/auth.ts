@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { APIError } from "better-auth/api"
 import { emailOTP } from "better-auth/plugins"
-import type { Db } from "../db/client"
+import { withUser, type Db } from "../db/client"
 import { authSchema } from "../db/schema"
 import { otpEmail, type EmailSender } from "../email"
 import { applyPush } from "../sync/push"
@@ -16,6 +16,18 @@ export type AuthConfig = {
   allowedEmails: string[]
   trustedOrigins?: string[]
   rateLimit?: boolean
+  /** Called after an account is deleted (wipes the user's Durable Object). */
+  onUserDeleted?: (userId: string) => Promise<void>
+}
+
+/** Remove every synced row of a user (account deletion, docs/security.md). */
+export async function deleteUserData(sql: Db["sql"], userId: string): Promise<void> {
+  await withUser(sql, userId, async (tx) => {
+    await tx`DELETE FROM records WHERE user_id = ${userId}`
+    await tx`DELETE FROM doc_updates WHERE user_id = ${userId}`
+    await tx`DELETE FROM mutations WHERE user_id = ${userId}`
+    await tx`DELETE FROM user_sync_state WHERE user_id = ${userId}`
+  })
 }
 
 export function parseAllowedEmails(value: string | undefined): string[] {
@@ -80,6 +92,15 @@ export function createAuth(db: Db, email: EmailSender, config: AuthConfig) {
       password: {
         hash: (prehash) => hashPassword(config.pepper, prehash),
         verify: ({ hash, password }) => verifyPassword(config.pepper, hash, password),
+      },
+    },
+    user: {
+      deleteUser: {
+        enabled: true,
+        beforeDelete: async (user) => deleteUserData(db.sql, user.id),
+        afterDelete: async (user) => {
+          await config.onUserDeleted?.(user.id)
+        },
       },
     },
     session: {

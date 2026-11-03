@@ -22,6 +22,7 @@ export interface Hub {
   subscribe(userId: string, input: PushSubscriptionInput): Promise<void>
   unsubscribe(userId: string, endpoint: string): Promise<void>
   websocket(userId: string, request: Request): Promise<Response>
+  wipe(userId: string): Promise<void>
 }
 
 export type Deps = {
