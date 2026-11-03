@@ -142,7 +142,12 @@ export class SyncEngine {
   }
 
   private async refreshPending() {
-    this.set({ pending: await this.store.pendingCount() })
+    try {
+      this.set({ pending: await this.store.pendingCount() })
+    } catch (e) {
+      // After stop() (sign-out, tests) the local database may already be closed.
+      if (!this.stopped) console.error("Could not count pending changes", e)
+    }
   }
 
   /** Run one full sync. Concurrent calls coalesce into one follow-up run. */
