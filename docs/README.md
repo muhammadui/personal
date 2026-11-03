@@ -12,5 +12,7 @@ Personal is an offline-first notes and todo app for the web (installable PWA). E
 | `reminders.md` | You touch reminders, notifications or the worker |
 | `security.md` | You touch locked notes, RLS, CSP, export or account deletion |
 | `roadmap.md` | You need phases, gates, acceptance tests, risks or open questions |
+| `design/README.md` | Before any UI work: tokens, components, motion, approved screens |
+| `push-field-test.md` | Testing reminder notifications by hand on real devices |
 | `decisions.md` | Before reversing or questioning any technical choice |
 | `tasks/phase-0.md` | You are picking the next task |

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Allow notifications</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;background:var(--canvas)">
+<div aria-hidden="true" style="padding:60px 20px;display:flex;flex-direction:column;gap:14px">
+<span class="t-title1">Today</span><span style="height:56px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line)"></span><span style="height:180px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line)"></span>
+</div>
+<div class="scrim"></div>
+<section class="sheet" aria-label="Allow notifications" style="padding:0 24px 40px;display:flex;flex-direction:column;gap:18px">
+<span class="sheet-handle"></span>
+<div class="enter" style="margin-top:8px;padding:16px;border-radius:var(--radius-lg);background:var(--brand-navy);color:#fff;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow-md)">
+<span style="width:40px;height:40px;flex:0 0 40px;border-radius:var(--radius-md);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center"><svg class="logo-mark" width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3640DB"></rect><g transform="rotate(8 18.5 14)"><rect class="logo-back" x="12.5" y="6" width="12" height="16" rx="2.5" fill="#B9BEF7"></rect></g><rect x="8" y="9" width="12.5" height="16" rx="2.5" fill="#FFFFFF"></rect><rect x="10.5" y="13" width="7" height="1.8" rx="0.9" fill="#3640DB"></rect><rect x="10.5" y="16.2" width="7" height="1.8" rx="0.9" fill="#3640DB"></rect><rect x="10.5" y="19.4" width="4.5" height="1.8" rx="0.9" fill="#3640DB"></rect></svg></span>
+<span style="display:flex;flex-direction:column;gap:2px;flex:1"><span style="display:flex;justify-content:space-between;font:700 12px/16px var(--font-sans);color:var(--brand-lavender)"><span>PERSONAL</span><span>4:00 pm</span></span><span style="font:700 15px/20px var(--font-sans)">Call the electrician</span><span style="font:600 13px/18px var(--font-sans);color:#DADDFB">Tap to open · Done · Snooze</span></span>
+</div>
+<div class="enter enter-1" style="display:flex;flex-direction:column;gap:8px"><h2 class="t-title2">Get your reminder on time</h2><p class="t-body" style="color:var(--ink-secondary)">You just set your first reminder. Allow notifications so it reaches you even when Personal is closed.</p></div>
+<div class="enter enter-2" style="display:flex;flex-direction:column;gap:10px">
+<span class="t-meta" style="display:flex;gap:8px;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Only for reminders you set and sync problems</span>
+<span class="t-meta" style="display:flex;gap:8px;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Quiet hours and snooze in Settings</span>
+</div>
+<div class="enter enter-3" style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+<a href="PhoneToday.dc.html" class="btn btn-primary btn-xl btn-block">Turn on notifications</a>
+<a href="PhoneToday.dc.html" class="btn btn-ghost btn-lg btn-block">Not now</a>
+</div>
+<p class="t-meta" style="font-size:12px;text-align:center">If you skip, reminders still show in the app's bell.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

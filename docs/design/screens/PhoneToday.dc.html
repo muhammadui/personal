@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — iPhone Today</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" data-theme="{{theme}}" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--canvas)">
+<div style="flex:1;min-height:0;overflow:hidden;padding:60px 20px 16px;display:flex;flex-direction:column;gap:16px">
+
+<header class="enter" style="display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:2px"><span class="t-meta">Tuesday, 3 November</span><h1 class="t-title1">Today</h1></div><a href="PhoneInbox.dc.html" class="icon-btn icon-btn-lg" aria-label="Notifications, 2 unread"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span class="pip"></span></a></header>
+<div class="banner banner-warn enter enter-1" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20"></path></svg><span>You're offline. {{pending}} changes are saved on this phone and will sync when you reconnect.</span></div>
+<div class="enter enter-2" style="display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:var(--radius-lg);background:var(--brand-blue);color:#fff">
+<span style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:800 15px/20px var(--font-sans)">{{doneCount}} of {{total}} done</span><span style="font:700 12px/16px var(--font-sans);color:#DADDFB">Next reminder 2:00 pm</span></span>
+<div class="progress progress-inverse"><span style="width:{{pct}}%"></span></div></div>
+<section style="display:flex;flex-direction:column;gap:8px" class="enter enter-3"><h2 class="t-label">Up next</h2>
+<div class="list"><sc-for list="{{tasks}}" as="t" hint-placeholder-count="5"><div class="task {{t.row}}"><button type="button" class="check {{t.chk}}" aria-label="{{t.label}}" onClick="{{t.toggle}}"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></button><div class="task-body"><a href="PhoneTask.dc.html" style="color:inherit;text-decoration:none;align-self:flex-start"><span class="task-title">{{t.title}}</span></a><span class="task-meta"><span class="meta-item {{t.metaCls}}">{{t.meta}}</span><sc-if value="{{t.unsynced}}" hint-placeholder-val="{{false}}"><span class="meta-item meta-warn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 20 20"></path><path d="M5.78 5.78A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.31-.2"></path><path d="M21.53 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7 7 0 0 0 9.18 5.03"></path></svg>Not synced</span></sc-if></span></div></div></sc-for></div></section>
+<sc-if value="{{toast}}" hint-placeholder-val="{{false}}"><div class="toast" style="position:absolute;left:16px;right:16px;bottom:110px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>Task completed</span><button type="button" class="toast-action" onClick="{{undo}}">Undo</button></div></sc-if>
+
+</div>
+<dc-import name="TabBar" active="today" hint-size="390px,94px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme": {"editor": "enum", "options": ["light", "dark"], "default": "light"}, "$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { done: { t5: true, t6: true }, toast: false, last: null };
+  }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { id: 't1', title: 'Send the draft report', meta: '2:00 pm · reminder', metaCls: 'meta-accent' },
+      { id: 't2', title: 'Call the electrician', meta: '4:00 pm · Home' },
+      { id: 't3', title: 'Buy printer ink', meta: 'Shopping', unsynced: true },
+      { id: 't4', title: 'Read 20 pages', meta: '9:00 pm · Daily' },
+      { id: 't5', title: 'Review the Phase 0 plan', meta: '10:00 am · Work' },
+      { id: 't6', title: 'Morning walk', meta: '6:30 am · Daily', unsynced: true }
+    ];
+    const tasks = base.map((t) => {
+      const d = !!s.done[t.id];
+      return { ...t, unsynced: !!t.unsynced, metaCls: t.metaCls || '', row: d ? 'is-done' : '', chk: d ? 'is-on' : '', label: d ? 'Mark not done' : 'Mark done',
+        toggle: () => {
+          this.setState({ done: { ...this.state.done, [t.id]: !d }, toast: !d, last: t.id });
+          clearTimeout(this._t);
+          if (!d) this._t = setTimeout(() => this.setState({ toast: false }), 4000);
+        } };
+    });
+    const doneCount = tasks.filter((t) => t.row).length;
+    return {
+      theme: this.props.theme ?? 'light', tasks, doneCount, total: tasks.length,
+      pct: Math.round(doneCount / tasks.length * 100), pending: 2,
+      toast: s.toast,
+      undo: () => this.setState({ done: { ...this.state.done, [this.state.last]: false }, toast: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

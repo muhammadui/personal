@@ -1,0 +1,59 @@
+/* Tailwind v4: map the design tokens (CSS variables from tokens.css) into Tailwind's theme.
+   Import order: tokens.css → tailwind → this file. */
+@theme inline {
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-hover: var(--brand-blue-hover);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-lavender: var(--brand-lavender);
+  --color-tint-blue: var(--tint-blue);
+  --color-text-accent: var(--text-accent);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-control: var(--line-control);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-on-brand: var(--ink-on-brand);
+  --color-warn: var(--warn);
+  --color-warn-tint: var(--warn-tint);
+  --color-warn-ink: var(--warn-ink);
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-note-lilac: var(--note-lilac);
+  --color-note-sand: var(--note-sand);
+  --color-note-mint: var(--note-mint);
+
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --ease-standard: cubic-bezier(.2,0,0,1);
+  --ease-enter: cubic-bezier(0,0,.2,1);
+  --ease-exit: cubic-bezier(.4,0,1,1);
+  --ease-spring: cubic-bezier(.34,1.56,.64,1);
+
+  --text-display: 40px; --text-display--line-height: 44px; --text-display--font-weight: 800; --text-display--letter-spacing: -0.03em;
+  --text-title-1: 32px; --text-title-1--line-height: 38px; --text-title-1--font-weight: 800; --text-title-1--letter-spacing: -0.025em;
+  --text-title-2: 24px; --text-title-2--line-height: 30px; --text-title-2--font-weight: 800; --text-title-2--letter-spacing: -0.02em;
+  --text-title-3: 18px; --text-title-3--line-height: 24px; --text-title-3--font-weight: 700; --text-title-3--letter-spacing: -0.01em;
+  --text-body-lg: 17px; --text-body-lg--line-height: 28px;
+  --text-body: 15px; --text-body--line-height: 22px;
+  --text-meta: 13px; --text-meta--line-height: 18px;
+  --text-label: 12px; --text-label--line-height: 16px;
+  --text-caption: 11px; --text-caption--line-height: 14px;
+}
+/* Tailwind's default radius scale (rounded-2xl, rounded-3xl …) must not be used. Lint for it. */

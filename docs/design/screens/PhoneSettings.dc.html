@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — iPhone Settings</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" data-theme="{{theme}}" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--canvas)">
+<div style="flex:1;min-height:0;overflow:hidden;padding:60px 20px 16px;display:flex;flex-direction:column;gap:16px">
+<h1 class="t-title1 enter">Settings</h1>
+<div class="card enter enter-1" style="padding:14px;display:flex;align-items:center;gap:12px"><span class="avatar" style="width:44px;height:44px">MU</span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span class="t-body-strong">Muhammad Ibrahim</span><span class="t-meta" style="font-size:12px">muhammad@example.com</span></span><span class="sync sync-ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path><path d="m9 14 2 2 4-4"></path></svg>Synced</span></div>
+<section class="enter enter-2" style="display:flex;flex-direction:column;gap:8px"><h2 class="t-label">Appearance</h2>
+<div class="seg" role="group" aria-label="Theme"><sc-for list="{{themes}}" as="o" hint-placeholder-count="3"><button type="button" class="seg-btn {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></section>
+<section class="enter enter-3" style="display:flex;flex-direction:column;gap:8px"><h2 class="t-label">Notifications</h2>
+<div class="list"><div class="task" style="min-height:52px"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Reminders</span></span><button type="button" role="switch" aria-label="Reminders" aria-checked="{{rem.on}}" class="switch {{rem.cls}}" onClick="{{rem.toggle}}"></button></div><div class="task" style="min-height:52px"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Quiet hours</span></span><span class="t-meta">10 pm – 7 am</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></div><div class="task" style="min-height:52px;border-bottom:0"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Default reminder time</span></span><span class="t-meta">9:00 am</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></div></div></section>
+<section class="enter enter-4" style="display:flex;flex-direction:column;gap:8px"><a href="PhoneLists.dc.html" class="btn btn-secondary btn-lg btn-block" style="justify-content:space-between">Lists and folders<span style="display:flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></a><h2 class="t-label">Sync and devices</h2>
+<div class="list"><div class="task" style="min-height:52px"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Sync on mobile data</span></span><button type="button" role="switch" aria-label="Sync on mobile data" aria-checked="{{cell.on}}" class="switch {{cell.cls}}" onClick="{{cell.toggle}}"></button></div><div class="task" style="min-height:52px;border-bottom:0"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Devices</span></span><span class="t-meta">3</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></div></div></section>
+<section class="enter enter-5" style="display:flex;flex-direction:column;gap:8px"><h2 class="t-label">Privacy</h2>
+<div class="list"><div class="task" style="min-height:52px"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Lock app with Face ID</span></span><button type="button" role="switch" aria-label="Lock app" aria-checked="{{lock.on}}" class="switch {{lock.cls}}" onClick="{{lock.toggle}}"></button></div><div class="task" style="min-height:52px;border-bottom:0"><span style="color:var(--ink-muted);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg></span><span class="task-body"><span class="t-body-strong" style="font-weight:600">Export all data</span></span><span class="t-meta">ZIP</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></div></div></section>
+<button type="button" class="btn btn-ghost btn-lg btn-block enter enter-6" style="color:var(--danger)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Sign out of this phone</button>
+</div>
+<dc-import name="TabBar" active="none" hint-size="390px,94px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { theme: 'light', rem: true, cell: false, lock: true }; }
+  renderVals() {
+    const s = this.state;
+    const sw = (k) => ({ on: s[k] ? 'true' : 'false', cls: s[k] ? 'is-on' : '', toggle: () => this.setState({ [k]: !this.state[k] }) });
+    const themes = [['light', 'Light'], ['dark', 'Dark'], ['system', 'System']].map(([id, label]) => ({ label, cls: s.theme === id ? 'is-on' : '', pick: () => this.setState({ theme: id }) }));
+    return { theme: s.theme === 'dark' ? 'dark' : 'light', themes, rem: sw('rem'), cell: sw('cell'), lock: sw('lock') };
+  }
+}
+</script>
+</body>
+</html>

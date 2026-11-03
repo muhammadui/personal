@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — First run</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--canvas)">
+<div style="flex:1;min-height:0;overflow:hidden;padding:60px 20px 16px;display:flex;flex-direction:column;gap:16px">
+
+<header class="enter" style="display:flex;flex-direction:column;gap:2px"><span class="t-meta">Tuesday, 3 November</span><h1 class="t-title1">Today</h1></header>
+<div class="banner banner-success enter enter-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path><path d="m9 14 2 2 4-4"></path></svg><span>You're signed in. This phone is ready to work offline.</span></div>
+<div class="enter enter-2" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 0 4px;text-align:center">
+<div style="position:relative;width:96px;height:80px" aria-hidden="true"><span style="position:absolute;left:30px;top:2px;width:52px;height:68px;border-radius:var(--radius-lg);background:var(--brand-lavender);transform:rotate(8deg)"></span><span style="position:absolute;left:14px;top:10px;width:52px;height:68px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-md);display:flex;flex-direction:column;gap:6px;padding:16px 10px"><span style="height:4px;border-radius:2px;background:var(--brand-blue)"></span><span style="height:4px;border-radius:2px;background:var(--brand-blue)"></span><span style="height:4px;width:60%;border-radius:2px;background:var(--brand-blue)"></span></span></div>
+<h2 class="t-title3">Nothing due today</h2><p class="t-meta" style="max-width:260px">Add a task or write your first note. Tap + any time.</p></div>
+<section class="card enter enter-3" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-body-strong">Get started</h2><span class="t-meta" style="font-size:12px">1 of 3</span></div>
+<div class="progress"><span style="width:33%"></span></div>
+<div class="list" style="border:0;border-radius:0">
+<div class="task enter enter-4 is-done"><span class="check is-on" style="pointer-events:none"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></span><div class="task-body"><span class="task-title">Create your account</span><span class="task-meta"><span class="meta-item">Done</span></span></div></div><div class="task enter enter-5"><span class="check" style="pointer-events:none"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></span><div class="task-body"><span class="task-title">Add your first task</span><span class="task-meta"><span class="meta-item">Try “Call mum tomorrow 6pm”</span></span></div></div><div class="task enter enter-6"><span class="check" style="pointer-events:none"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></span><div class="task-body"><span class="task-title">Write a note</span><span class="task-meta"><span class="meta-item">Lists, ideas, anything</span></span></div></div>
+</div></section>
+
+</div>
+<dc-import name="TabBar" active="today" hint-size="390px,94px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Notification centre</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="min-height:960px;position:relative;display:flex;flex-wrap:wrap;background:var(--canvas)">
+<div style="flex:1 1 248px;max-width:100%;min-height:960px;display:flex"><dc-import name="Sidebar" active="today" hint-size="248px,960px"></dc-import></div>
+<main style="flex:999 1 560px;min-width:0;padding:32px 40px 48px">
+<div style="max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+<header style="display:flex;justify-content:space-between;align-items:flex-end"><div style="display:flex;flex-direction:column;gap:4px"><span class="t-meta">Tuesday, 3 November</span><h1 class="t-display">Today</h1></div><span class="icon-btn icon-btn-lg" style="background:var(--tint-blue);color:var(--text-accent);border-color:var(--brand-blue)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></span></header>
+<span style="height:52px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--line)"></span><span style="height:340px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line)"></span>
+</div>
+</main>
+
+<section class="popover" aria-label="Notifications" style="position:absolute;top:100px;right:40px;width:420px;z-index:5;display:flex;flex-direction:column;overflow:hidden">
+<header style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px"><h2 class="t-title3">Notifications</h2><button type="button" class="btn btn-ghost btn-sm" style="color:var(--text-accent)">Mark all read</button></header>
+<div style="padding:0 16px 12px"><div class="seg" role="group" aria-label="Filter"><button type="button" class="seg-btn is-on">All</button><button type="button" class="seg-btn">Reminders</button><button type="button" class="seg-btn">Sync</button></div></div>
+<div style="border-top:1px solid var(--line)">
+<div class="task" style="align-items:flex-start;padding:14px 16px"><span style="width:8px;height:8px;flex:0 0 8px;margin-top:6px;border-radius:var(--radius-full);background:var(--brand-blue)" aria-label="Unread"></span><span style="width:32px;height:32px;flex:0 0 32px;border-radius:var(--radius-md);background:var(--tint-blue);color:var(--text-accent);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></span><span class="task-body" style="gap:4px"><span style="display:flex;justify-content:space-between;gap:8px"><span class="t-body-strong" style="font-size:14px">Send the draft report</span><span class="t-meta" style="font-size:12px;white-space:nowrap">2:00 pm</span></span><span class="t-meta" style="font-weight:500;color:var(--ink-secondary)">Reminder for 2:00 pm</span><span style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn btn-primary btn-sm">Done</button><button type="button" class="btn btn-secondary btn-sm">Snooze 15 min</button></span></span></div>
+<div class="task" style="align-items:flex-start;padding:14px 16px"><span style="width:8px;height:8px;flex:0 0 8px;margin-top:6px;border-radius:var(--radius-full);background:var(--brand-blue)" aria-label="Unread"></span><span style="width:32px;height:32px;flex:0 0 32px;border-radius:var(--radius-md);background:var(--warn-tint);color:var(--warn);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 20 20"></path><path d="M5.78 5.78A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.31-.2"></path><path d="M21.53 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7 7 0 0 0 9.18 5.03"></path></svg></span><span class="task-body" style="gap:4px"><span style="display:flex;justify-content:space-between;gap:8px"><span class="t-body-strong" style="font-size:14px">3 changes waiting to sync</span><span class="t-meta" style="font-size:12px;white-space:nowrap">1:40 pm</span></span><span class="t-meta" style="font-weight:500;color:var(--ink-secondary)">Saved on this Mac. They'll sync when you're back online.</span></span></div>
+<div class="task" style="align-items:flex-start;padding:14px 16px"><span style="width:8px;flex:0 0 8px"></span><span style="width:32px;height:32px;flex:0 0 32px;border-radius:var(--radius-md);background:var(--success-tint);color:var(--success);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></span><span class="task-body" style="gap:4px"><span style="display:flex;justify-content:space-between;gap:8px"><span class="t-body-strong" style="font-size:14px">Morning walk</span><span class="t-meta" style="font-size:12px;white-space:nowrap">6:41 am</span></span><span class="t-meta" style="font-weight:500;color:var(--ink-secondary)">Marked done on iPhone</span></span></div>
+<div class="task" style="align-items:flex-start;padding:14px 16px"><span style="width:8px;flex:0 0 8px"></span><span style="width:32px;height:32px;flex:0 0 32px;border-radius:var(--radius-md);background:var(--surface-sunken);color:var(--ink-muted);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path></svg></span><span class="task-body" style="gap:4px"><span style="display:flex;justify-content:space-between;gap:8px"><span class="t-body-strong" style="font-size:14px">New sign-in on Chrome</span><span class="t-meta" style="font-size:12px;white-space:nowrap">Yesterday</span></span><span class="t-meta" style="font-weight:500;color:var(--ink-secondary)">If this wasn't you, sign it out in Settings.</span></span></div>
+</div>
+<a href="Settings.dc.html" class="btn btn-ghost btn-block" style="border-radius:0;border-top:1px solid var(--line);height:44px">Notification settings</a>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1440, "height": 960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

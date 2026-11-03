@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Tab bar</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<nav class="tabbar p-app" aria-label="Tabs" style="width:100%;font-family:var(--font-sans)">
+<a href="PhoneToday.dc.html" class="tab {{t.today}}" aria-current="{{c.today}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>Today</a>
+<a href="PhoneNotes.dc.html" class="tab {{t.notes}}" aria-current="{{c.notes}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"></path></svg>Notes</a>
+<a href="PhoneCapture.dc.html" class="fab" aria-label="Quick add"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></a>
+<a href="PhoneUpcoming.dc.html" class="tab {{t.upcoming}}" aria-current="{{c.upcoming}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>Upcoming</a>
+<a href="PhoneSearch.dc.html" class="tab {{t.search}}" aria-current="{{c.search}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>Search</a>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"active": {"editor": "enum", "options": ["today", "notes", "upcoming", "search"], "default": "today"}, "$preview": {"width": 390, "height": 94}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const a = this.props.active ?? 'today';
+    const keys = ['today', 'notes', 'upcoming', 'search'];
+    const t = {}, c = {};
+    keys.forEach((k) => { t[k] = a === k ? 'is-active' : ''; c[k] = a === k ? 'page' : 'false'; });
+    return { t, c };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Trash</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--canvas)">
+<header style="display:flex;align-items:center;gap:4px;padding:52px 8px 8px"><a href="PhoneNotes.dc.html" class="btn btn-ghost" style="padding:0 8px;gap:2px;color:var(--text-accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Notes</a><span style="flex:1"></span><button type="button" class="btn btn-ghost btn-sm" style="color:var(--danger);margin-right:8px">Empty Trash</button></header>
+<div style="flex:1;min-height:0;overflow:hidden;padding:4px 20px 24px;display:flex;flex-direction:column;gap:16px">
+<h1 class="t-title1 enter">Trash</h1>
+<div class="banner banner-info enter enter-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><span style="font-weight:600">Items stay here for 30 days, then they're deleted for good.</span></div>
+<sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}"><div class="list enter enter-2"><sc-for list="{{items}}" as="t" hint-placeholder-count="4"><div class="task" style="min-height:64px"><span style="width:36px;height:36px;flex:0 0 36px;border-radius:var(--radius-md);background:var(--surface-sunken);color:var(--ink-muted);display:flex;align-items:center;justify-content:center"><sc-if value="{{t.isNote}}" hint-placeholder-val="{{true}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"></path></svg></sc-if><sc-if value="{{t.isTask}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if></span><span class="task-body"><span class="t-body-strong">{{t.title}}</span><span class="t-meta" style="font-size:12px">{{t.meta}}</span></span><button type="button" class="btn btn-secondary btn-sm" onClick="{{t.restore}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg>Restore</button></div></sc-for></div></sc-if>
+<sc-if value="{{empty}}" hint-placeholder-val="{{false}}"><div class="fade-in" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:48px 0;text-align:center"><span style="width:56px;height:56px;border-radius:var(--radius-lg);background:var(--surface-sunken);color:var(--ink-muted);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></span><h2 class="t-title3">Trash is empty</h2><p class="t-meta">Deleted notes and tasks show up here.</p></div></sc-if>
+</div>
+<sc-if value="{{toast}}" hint-placeholder-val="{{false}}"><div class="toast" style="position:absolute;left:16px;right:16px;bottom:34px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg><span>{{toastText}}</span></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { gone: {}, toast: '' }; }
+  renderVals() {
+    const s = this.state;
+    const all = [
+      { id: 'a', title: 'Old shopping list', meta: 'Note · Personal · deleted 2 days ago', type: 'note', back: 'Personal' },
+      { id: 'b', title: 'Draft talk outline', meta: 'Note · Ideas · deleted 6 days ago', type: 'note', back: 'Ideas' },
+      { id: 'c', title: 'Renew passport photos', meta: 'Task · Home · deleted 12 days ago', type: 'task', back: 'Home' },
+      { id: 'd', title: 'Hosting comparison v1', meta: 'Note · Work · deleted 21 days ago', type: 'note', back: 'Work' }
+    ];
+    const items = all.filter((t) => !s.gone[t.id]).map((t) => ({ ...t, isNote: t.type === 'note', isTask: t.type === 'task',
+      restore: () => { this.setState({ gone: { ...this.state.gone, [t.id]: true }, toast: 'Restored to ' + t.back }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 3000); } }));
+    return { items, hasItems: items.length > 0, empty: items.length === 0, toast: !!s.toast, toastText: s.toast };
+  }
+}
+</script>
+</body>
+</html>

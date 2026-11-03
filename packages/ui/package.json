@@ -3,16 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --passWithNoTests"
   },
-  "peerDependencies": { "react": "^19.0.0" },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
   "devDependencies": {
     "@types/react": "^19.2.0",
     "react": "^19.3.1",
     "typescript": "~6.0.3",
     "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "lucide-react": "^1.66.0"
   }
 }

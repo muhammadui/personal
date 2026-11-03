@@ -42,6 +42,14 @@ The owner does not write code. You write all of it. The owner reviews plans, run
 - Keep changes small: one task per branch, one commit per logical step, clear commit messages.
 - End each task with a short summary for the owner: what changed, how to try it, what to test by hand.
 
+## UI
+- Before any UI work, read `docs/design/README.md`, then `docs/design/components.md` and `docs/design/motion.md`.
+- Every screen has an approved design in `docs/design/screens/`. Match it. See `docs/design/screens.md` for which file is which route.
+- Use only values from `docs/design/tokens.json` (via the CSS variables). No raw hex, no new sizes, no radius above 12px, no Tailwind `rounded-2xl`/`rounded-3xl`/`rounded-full` on cards or buttons.
+- Icons: `lucide-react` only. No emoji in the UI.
+- Animations: only the recipes in `motion.md`, and always respect `prefers-reduced-motion`.
+- Fonts are self-hosted (`@fontsource-variable/plus-jakarta-sans`, `@fontsource/jetbrains-mono`) so the app looks right offline.
+
 ## Commands
 First time: `pnpm install`, `pnpm db:up` (Docker Postgres on port 54329), `pnpm db:migrate`, copy `apps/api/.dev.vars.example` to `apps/api/.dev.vars`.
 - `pnpm dev` — app (Vite, http://localhost:5173) + api (wrangler dev, :8787; Vite proxies `/api`)

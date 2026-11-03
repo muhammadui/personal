@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Date and reminder picker</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;background:var(--canvas)">
+<div aria-hidden="true" style="padding:60px 20px;display:flex;flex-direction:column;gap:14px"><span class="t-meta">Tuesday, 3 November</span><span class="t-title1">Today</span><span style="height:64px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line)"></span><span style="height:220px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line)"></span></div>
+<div class="scrim"></div>
+<section class="sheet" style="padding:0 20px 34px;display:flex;flex-direction:column;gap:16px"><span class="sheet-handle"></span>
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Due and reminder</h2><button type="button" class="btn btn-ghost btn-sm" style="color:var(--text-accent)">Clear</button></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{presets}}" as="p" hint-placeholder-count="4"><button type="button" class="chip {{p.cls}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span class="t-body-strong">November 2026</span><span style="display:flex;gap:4px"><button type="button" class="icon-btn icon-btn-plain" aria-label="Previous month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button><button type="button" class="icon-btn icon-btn-plain" aria-label="Next month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></span></div>
+<div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center"><span class="t-caption t-muted">M</span><span class="t-caption t-muted">T</span><span class="t-caption t-muted">W</span><span class="t-caption t-muted">T</span><span class="t-caption t-muted">F</span><span class="t-caption t-muted">S</span><span class="t-caption t-muted">S</span>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="36"><button type="button" aria-label="{{d.aria}}" onClick="{{d.pick}}" style="height:40px;border:0;border-radius:var(--radius-md);background:{{d.bg}};color:{{d.fg}};font:{{d.weight}} 14px/1 var(--font-sans);cursor:pointer;visibility:{{d.vis}};transition:background-color var(--dur-fast) var(--ease-standard),color var(--dur-fast)">{{d.n}}</button></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span class="t-label">Time</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{times}}" as="t" hint-placeholder-count="5"><button type="button" class="chip {{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div></div>
+<div class="banner banner-info"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span>{{summary}}</span></div>
+<a href="PhoneTask.dc.html" class="btn btn-primary btn-xl btn-block">Save</a>
+</section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { day: 4, time: '4:00 pm', preset: 'tomorrow' }; }
+  renderVals() {
+    const s = this.state;
+    const presets = [['later', 'Later today', 3, '6:00 pm'], ['tomorrow', 'Tomorrow', 4, '9:00 am'], ['weekend', 'This weekend', 7, '9:00 am'], ['next', 'Next week', 9, '9:00 am']]
+      .map(([id, label, day, time]) => ({ label, cls: s.preset === id ? 'is-on' : '', pick: () => this.setState({ preset: id, day, time }) }));
+    const days = [];
+    for (let i = 0; i < 6; i++) days.push({ n: '', vis: 'hidden', bg: 'transparent', fg: 'inherit', weight: 600, aria: '', pick: () => {} });
+    for (let n = 1; n <= 30; n++) {
+      const sel = n === s.day, today = n === 3, past = n < 3;
+      days.push({ n: String(n), vis: 'visible', aria: 'November ' + n,
+        bg: sel ? 'var(--brand-blue)' : (today ? 'var(--tint-blue)' : 'transparent'),
+        fg: sel ? '#fff' : (today ? 'var(--text-accent)' : (past ? 'var(--ink-faint)' : 'var(--ink)')),
+        weight: sel || today ? 800 : 600,
+        pick: () => this.setState({ day: n, preset: '' }) });
+    }
+    const times = ['9:00 am', '12:00 pm', '4:00 pm', '6:00 pm', 'Custom'].map((t) => ({ label: t, cls: s.time === t ? 'is-on' : '', pick: () => this.setState({ time: t, preset: '' }) }));
+    const dow = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][(s.day - 1) % 7];
+    return { presets, days, times, summary: 'Due ' + dow + ' ' + s.day + ' Nov, ' + s.time + '. Reminder 15 min before, on every device.' };
+  }
+}
+</script>
+</body>
+</html>

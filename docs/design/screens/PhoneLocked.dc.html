@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Locked note</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)">
+<header style="display:flex;align-items:center;padding:52px 8px 8px"><a href="PhoneNotes.dc.html" class="btn btn-ghost" style="padding:0 8px;gap:2px;color:var(--text-accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Notes</a></header>
+<div style="flex:1;padding:16px 28px 36px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center">
+<span class="enter" style="width:64px;height:64px;border-radius:var(--radius-lg);background:var(--brand-navy);color:#fff;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+<div class="enter enter-1" style="display:flex;flex-direction:column;gap:6px"><h1 class="t-title2">Passwords and PINs</h1><p class="t-meta">This note is locked. Enter your 4-digit PIN.</p></div>
+<div class="pin-dots enter enter-2" aria-live="polite" aria-label="{{entered}} of 4 digits entered"><sc-for list="{{dots}}" as="d" hint-placeholder-count="4"><span class="pin-dot {{d.cls}}"></span></sc-for></div>
+<sc-if value="{{open}}" hint-placeholder-val="{{false}}"><div class="banner banner-success" style="width:100%"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>Unlocked on this phone for 5 minutes.</span></div><a href="PhoneEditor.dc.html" class="btn btn-primary btn-xl btn-block">Open note</a></sc-if>
+<sc-if value="{{closed}}" hint-placeholder-val="{{true}}"><div class="pin-grid enter enter-3" style="width:100%;margin-top:auto"><sc-for list="{{keys}}" as="k" hint-placeholder-count="9"><button type="button" class="pin-key" onClick="{{k.press}}">{{k.label}}</button></sc-for><span></span><button type="button" class="pin-key" onClick="{{zero}}">0</button><button type="button" class="pin-key" aria-label="Delete" onClick="{{back}}" style="display:flex;align-items:center;justify-content:center;background:transparent"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5a2 2 0 0 0-1.34.52l-6.33 5.74a1 1 0 0 0 0 1.48l6.33 5.74A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"></path><path d="m12 9 6 6M18 9l-6 6"></path></svg></button></div></sc-if>
+<p class="t-meta" style="font-size:12px">Forgot the PIN? Locked notes can't be recovered without it.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { pin: '' }; }
+  add(d) { if (this.state.pin.length < 4) this.setState({ pin: this.state.pin + d }); }
+  renderVals() {
+    const n = this.state.pin.length;
+    return {
+      entered: n,
+      dots: [0, 1, 2, 3].map((i) => ({ cls: i < n ? 'is-on' : '' })),
+      keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((d) => ({ label: d, press: () => this.add(d) })),
+      zero: () => this.add('0'),
+      back: () => this.setState({ pin: this.state.pin.slice(0, -1) }),
+      open: n === 4, closed: n < 4
+    };
+  }
+}
+</script>
+</body>
+</html>

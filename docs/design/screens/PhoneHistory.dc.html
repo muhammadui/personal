@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Version history</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)">
+<header style="display:flex;align-items:center;gap:4px;padding:52px 8px 8px"><a href="PhoneEditor.dc.html" class="btn btn-ghost" style="padding:0 8px;gap:2px;color:var(--text-accent)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>Note</a><span style="flex:1"></span></header>
+<div style="flex:1;min-height:0;overflow:hidden;padding:4px 20px 24px;display:flex;flex-direction:column;gap:14px">
+<div class="enter"><h1 class="t-title2">Version history</h1><p class="t-meta">Phase 0 kickoff</p></div>
+<div class="enter enter-1" style="display:flex;gap:8px;overflow:hidden"><sc-for list="{{versions}}" as="v" hint-placeholder-count="4"><button type="button" onClick="{{v.pick}}" aria-pressed="{{v.pressed}}" style="flex:0 0 auto;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:var(--radius-md);border:1px solid {{v.border}};background:{{v.bg}};text-align:left;cursor:pointer;font-family:var(--font-sans);transition:background-color var(--dur-fast),border-color var(--dur-fast)"><span style="font:700 13px/18px var(--font-sans);color:var(--ink)">{{v.when}}</span><span style="font:600 11px/14px var(--font-sans);color:var(--ink-muted)">{{v.dev}}</span></button></sc-for></div>
+<article class="card enter enter-2" style="flex:1;min-height:0;overflow:hidden;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--canvas)">
+<span class="t-label">{{label}}</span>
+<h2 class="t-title2" style="font-size:22px">Phase 0 kickoff</h2>
+<p class="t-body" style="color:var(--ink-secondary);line-height:24px">Sync comes first. Nothing else gets built until two devices can edit offline <span style="background:var(--success-tint);color:var(--success);border-radius:var(--radius-xs);padding:0 3px">and always end up the same</span>.</p>
+<p class="t-body" style="color:var(--ink-secondary);line-height:24px"><span style="background:var(--danger-tint);color:var(--danger);text-decoration:line-through;border-radius:var(--radius-xs);padding:0 3px">Start with the UI so we can demo it.</span></p>
+<p class="t-body" style="color:var(--ink-secondary);line-height:24px">This week: scaffold the monorepo, write the HLC <span style="background:var(--success-tint);color:var(--success);border-radius:var(--radius-xs);padding:0 3px">and its tests</span>.</p>
+<span style="display:flex;gap:12px" class="t-meta"><span style="display:inline-flex;gap:6px;align-items:center"><span class="ldot" style="background:var(--success)"></span>Added</span><span style="display:inline-flex;gap:6px;align-items:center"><span class="ldot" style="background:var(--danger)"></span>Removed</span></span>
+</article>
+<button type="button" class="btn btn-primary btn-xl btn-block enter enter-3"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5M12 7v5l4 2"></path></svg>Restore this version</button>
+<p class="t-meta" style="font-size:12px;text-align:center">The current version is kept, so you can undo a restore.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 1 }; }
+  renderVals() {
+    const list = [['Current', 'This Mac · now'], ['Today, 1:05 am', 'MacBook'], ['Yesterday, 6:40 pm', 'iPhone'], ['Sun, 11:12 am', 'MacBook']];
+    const versions = list.map(([when, dev], i) => ({ when, dev, pressed: this.state.v === i ? 'true' : 'false',
+      bg: this.state.v === i ? 'var(--tint-blue)' : 'var(--surface)', border: this.state.v === i ? 'var(--brand-blue)' : 'var(--line)',
+      pick: () => this.setState({ v: i }) }));
+    return { versions, label: 'Changes since ' + list[this.state.v][0] };
+  }
+}
+</script>
+</body>
+</html>

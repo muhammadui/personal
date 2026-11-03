@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Sign in</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)">
+<div style="padding:52px 12px 0"><a href="Onboard3.dc.html" class="icon-btn icon-btn-plain icon-btn-lg" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a></div>
+<div style="flex:1;padding:12px 24px 32px;display:flex;flex-direction:column;gap:20px">
+<div class="enter" style="display:flex;flex-direction:column;gap:16px"><svg class="logo-mark" width="44" height="44" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3640DB"></rect><g transform="rotate(8 18.5 14)"><rect class="logo-back" x="12.5" y="6" width="12" height="16" rx="2.5" fill="#B9BEF7"></rect></g><rect x="8" y="9" width="12.5" height="16" rx="2.5" fill="#FFFFFF"></rect><rect x="10.5" y="13" width="7" height="1.8" rx="0.9" fill="#3640DB"></rect><rect x="10.5" y="16.2" width="7" height="1.8" rx="0.9" fill="#3640DB"></rect><rect x="10.5" y="19.4" width="4.5" height="1.8" rx="0.9" fill="#3640DB"></rect></svg><h1 class="t-title1">Welcome back</h1><p class="t-body" style="color:var(--ink-muted);margin-top:-10px">Sign in to sync your notes and tasks to this device.</p></div>
+<label class="field enter enter-1"><span class="field-label">Email</span><input class="input" type="email" value="muhammad@example.com" autocomplete="email"></label>
+<div class="field enter enter-2"><span style="display:flex;justify-content:space-between;align-items:baseline"><label class="field-label" for="pw2">Password</label><a href="ForgotPassword.dc.html" class="t-meta" style="font-size:13px;font-weight:700;color:var(--text-accent);text-decoration:none">Forgot password?</a></span><div class="input-wrap"><input id="pw2" class="input is-error" type="password" value="password1" autocomplete="current-password"><button type="button" class="icon-btn" aria-label="Show password"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div><span class="field-error">That password doesn't match this email.</span></div>
+<a href="FirstToday.dc.html" class="btn btn-primary btn-xl btn-block enter enter-3">Sign in</a>
+<div style="display:flex;align-items:center;gap:12px" class="enter enter-4"><span class="divider" style="flex:1"></span><span class="t-meta" style="font-size:12px">or</span><span class="divider" style="flex:1"></span></div>
+<button type="button" class="btn btn-secondary btn-lg btn-block enter enter-5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"></path></svg>Continue with Google</button>
+<div class="banner banner-info enter enter-6" style="margin-top:auto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg><span style="font-weight:600">Your notes download to this device after sign-in, so they keep working offline.</span></div>
+<p class="t-meta" style="text-align:center">New to Personal? <a href="Signup.dc.html" style="font-weight:800;text-decoration:none">Create an account</a></p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

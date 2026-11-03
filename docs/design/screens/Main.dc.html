@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Today</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" data-theme="{{theme}}" style="min-height:960px;position:relative;display:flex;flex-wrap:wrap;background:var(--canvas)">
+<div style="flex:1 1 248px;max-width:100%;min-height:960px;display:flex"><dc-import name="Sidebar" active="today" hint-size="248px,960px"></dc-import></div>
+<main style="flex:999 1 560px;min-width:0;padding:32px 40px 48px">
+<div style="max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+
+<header class="enter" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+<div style="display:flex;flex-direction:column;gap:4px"><span class="t-meta">Tuesday, 3 November</span><h1 class="t-display">Today</h1></div>
+<div style="display:flex;align-items:center;gap:10px"><span class="t-meta">{{doneCount}} of {{total}} done</span><span class="pill-status pill-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path><path d="m9 14 2 2 4-4"></path></svg>Synced</span><a href="Inbox.dc.html" class="icon-btn icon-btn-lg" aria-label="Notifications, 2 unread"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span class="pip"></span></a></div>
+</header>
+<label class="searchbox enter enter-1" style="height:52px;background:var(--surface);padding:0 16px;box-shadow:var(--shadow-sm)"><span style="color:var(--text-accent);display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></span><span class="sr-only">Add a task</span><input type="text" placeholder="Add a task — try “Pay electricity bill Friday 6pm”" style="font-size:15px"><span class="kbd">N</span></label>
+<sc-if value="{{banner}}" hint-placeholder-val="{{true}}"><section aria-label="Reminder" class="banner banner-navy enter enter-2" style="flex-wrap:wrap;gap:16px">
+<span style="width:40px;height:40px;border-radius:var(--radius-md);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></span>
+<span style="flex:1 1 240px;display:flex;flex-direction:column;gap:2px"><span style="font:700 11px/14px var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--brand-lavender)">Reminder · 2:00 pm</span><span style="font:700 16px/22px var(--font-sans)">Send the draft report</span></span>
+<span style="display:flex;gap:8px"><button type="button" class="btn btn-outline-inverse" onClick="{{dismiss}}">Snooze 15 min</button><button type="button" class="btn btn-inverse" onClick="{{dismiss}}">Done</button></span></section></sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:20px">
+<section class="enter enter-3" style="display:flex;flex-direction:column;gap:8px"><h2 class="t-label t-warn">Overdue</h2>
+<div class="list list-warn"><div class="task"><button type="button" class="check check-warn" aria-label="Mark done"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></button><div class="task-body"><span class="task-title">Renew web hosting plan</span><span class="task-meta"><span class="meta-item meta-warn">Yesterday, 5:00 pm</span><span class="meta-item"><span class="ldot" style="background:var(--brand-blue)"></span>Work</span></span></div><button type="button" class="btn btn-secondary btn-sm">Move to today</button></div></div></section>
+<section class="enter enter-4" style="display:flex;flex-direction:column;gap:8px"><h2 class="t-label">Today</h2>
+<div class="list"><sc-for list="{{tasks}}" as="t" hint-placeholder-count="6"><div class="task {{t.row}}"><button type="button" class="check {{t.chk}}" aria-label="{{t.label}}" onClick="{{t.toggle}}"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></button><div class="task-body"><a href="TaskPanel.dc.html" style="color:inherit;text-decoration:none;align-self:flex-start"><span class="task-title">{{t.title}}</span></a><span class="task-meta"><span class="meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>{{t.time}}</span><span class="meta-item"><span class="ldot" style="background:{{t.dot}}"></span>{{t.list}}</span><sc-if value="{{t.repeat}}" hint-placeholder-val="{{false}}"><span class="meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>{{t.repeatText}}</span></sc-if><sc-if value="{{t.hasSub}}" hint-placeholder-val="{{false}}"><span class="meta-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"></path></svg>{{t.sub}}</span></sc-if></span></div><sc-if value="{{t.high}}" hint-placeholder-val="{{false}}"><span class="badge badge-warn">HIGH</span></sc-if></div></sc-for></div></section>
+</div>
+<aside style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:20px">
+<section class="panel enter enter-5" style="display:flex;flex-direction:column;gap:14px"><h2 class="t-title3">Reminders today</h2>
+<div style="display:grid;grid-template-columns:72px 1fr;gap:12px 8px;align-items:baseline"><span class="t-body-strong t-accent" style="font-size:13px">2:00 pm</span><span class="t-body">Send the draft report</span><span class="t-body-strong t-muted" style="font-size:13px">4:00 pm</span><span class="t-body">Call the electrician</span><span class="t-body-strong t-muted" style="font-size:13px">9:00 pm</span><span class="t-body">Read 20 pages</span></div></section>
+<section class="enter enter-6" style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Pinned notes</h2><a href="Notes.dc.html" class="btn btn-ghost btn-sm" style="color:var(--text-accent)">See all</a></div>
+<a href="Editor.dc.html" class="note-card note-lilac" style="min-height:0"><span class="t-body-strong">Phase 0 kickoff</span><span class="note-preview">Sync engine first, then auth. Two-device test rig before any UI work.</span><span class="note-meta">Edited 1 hour ago</span></a>
+<a href="Notes.dc.html" class="note-card" style="min-height:0"><span class="t-body-strong">Market list</span><span class="note-preview">Rice, 5 kg · Tomatoes and pepper · Groundnut oil</span><span class="note-meta">1 of 3 done</span></a></section>
+</aside>
+</div>
+
+</div>
+</main>
+<sc-if value="{{toast}}" hint-placeholder-val="{{false}}"><div class="toast" style="position:absolute;left:272px;bottom:24px;min-width:320px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>Task completed</span><button type="button" class="toast-action" onClick="{{undo}}">Undo</button></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme": {"editor": "enum", "options": ["light", "dark"], "default": "light"}, "$preview": {"width": 1440, "height": 960}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { done: { t6: true }, toast: false, last: null, banner: true }; }
+  renderVals() {
+    const s = this.state;
+    const base = [
+      { id: 't1', title: 'Review the Phase 0 sync plan', time: '10:00 am', list: 'Work', dot: 'var(--brand-blue)', sub: '1 of 3', high: true },
+      { id: 't2', title: 'Weekly team check-in', time: '11:30 am', list: 'Work', dot: 'var(--brand-blue)', repeatText: 'Every Tuesday' },
+      { id: 't3', title: 'Send the draft report', time: '2:00 pm', list: 'Work', dot: 'var(--brand-blue)' },
+      { id: 't4', title: 'Call the electrician', time: '4:00 pm', list: 'Home', dot: 'var(--brand-navy)' },
+      { id: 't5', title: 'Read 20 pages', time: '9:00 pm', list: 'Personal', dot: 'var(--brand-lavender)', repeatText: 'Daily' },
+      { id: 't6', title: 'Morning walk', time: '6:30 am', list: 'Personal', dot: 'var(--brand-lavender)', repeatText: 'Daily' }
+    ];
+    const tasks = base.map((t) => {
+      const d = !!s.done[t.id];
+      return { ...t, repeat: !!t.repeatText, hasSub: !!t.sub, high: !!t.high && !d, row: d ? 'is-done' : '', chk: d ? 'is-on' : '', label: d ? 'Mark not done' : 'Mark done',
+        toggle: () => {
+          this.setState({ done: { ...this.state.done, [t.id]: !d }, toast: !d, last: t.id });
+          clearTimeout(this._t);
+          if (!d) this._t = setTimeout(() => this.setState({ toast: false }), 4000);
+        } };
+    });
+    const doneCount = tasks.filter((t) => t.row).length;
+    return {
+      theme: this.props.theme ?? 'light', tasks, doneCount, total: tasks.length, toast: s.toast, banner: s.banner,
+      dismiss: () => this.setState({ banner: false }),
+      undo: () => this.setState({ done: { ...this.state.done, [this.state.last]: false }, toast: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

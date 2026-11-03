@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Handwriting mode</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:390px;height:844px;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)">
+<header style="display:flex;align-items:center;gap:4px;padding:52px 8px 8px;border-bottom:1px solid var(--line)">
+<button type="button" class="icon-btn icon-btn-plain icon-btn-lg" aria-label="Undo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg></button><button type="button" class="icon-btn icon-btn-plain icon-btn-lg" aria-label="Redo" style="color:var(--ink-faint)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"></path></svg></button>
+<span style="flex:1;text-align:center" class="t-body-strong">Drawing</span>
+<a href="PhoneEditor.dc.html" class="btn btn-primary btn-sm" style="margin-right:8px">Done</a>
+</header>
+<div style="flex:1;position:relative;background:var(--canvas)">
+<svg width="390" height="100%" style="position:absolute;inset:0" aria-hidden="true"><defs><pattern id="dotgrid" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="var(--line-control)" opacity=".5"></circle></pattern></defs><rect width="100%" height="100%" fill="url(#dotgrid)"></rect></svg>
+<svg viewBox="0 0 390 520" style="position:absolute;left:0;top:0;width:390px;height:520px" role="img" aria-label="Handwritten notes: Saturday market list with a sketch"><g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M28 60c8-14 22-16 28-4s-4 18-14 22 22 0 30-10M78 44v38M96 62c6-6 16-4 16 6s-10 14-16 6M124 54c0 18 0 26 2 28m-2-22c8-8 18-6 20 2M156 70c8 0 16-4 14-10s-14-4-14 6 8 16 18 12M188 58c2 10 2 18 0 24m0-22c6-8 14-6 16 2" stroke="var(--ink)" stroke-width="2.6"></path>
+<path d="M24 92c60 4 120 2 190-4" stroke="var(--brand-blue)" stroke-width="2.4"></path>
+<path d="M40 136l6 6 12-14M74 136c10-2 30-2 60 0M40 186h16v16H40zM74 194c14-2 40-2 70 0M40 236h16v16H40zM74 244c18-2 36-2 52 0" stroke="var(--ink)" stroke-width="2.4"></path>
+<path d="M70 196c30 0 60 0 96-2" stroke="var(--warn)" stroke-width="14" opacity=".28"></path>
+<path d="M240 140c30-20 70-14 90 10s6 70-34 76-70-24-60-56 40-34 54-20" stroke="var(--brand-blue)" stroke-width="2.6"></path>
+<path d="M268 186l12 10 20-26" stroke="var(--success)" stroke-width="3"></path>
+</g></svg>
+<div style="position:absolute;left:236px;top:246px;width:24px;height:24px;border:2px solid var(--brand-blue);border-radius:var(--radius-full);background:var(--surface);box-shadow:var(--shadow-md)" aria-hidden="true"></div>
+</div>
+<section aria-label="Pen tools" style="padding:12px 16px 30px;border-top:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:12px">
+<div role="group" aria-label="Tool" style="display:flex;justify-content:space-between"><sc-for list="{{tools}}" as="t" hint-placeholder-count="5"><button type="button" class="icon-btn icon-btn-plain icon-btn-lg" aria-label="{{t.label}}" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="width:56px;background:{{t.bg}};color:{{t.fg}};transition:background-color var(--dur-fast),color var(--dur-fast),transform var(--dur-instant)">
+<sc-if value="{{t.isPen}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"></path></svg></sc-if><sc-if value="{{t.isPencil}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"></path><path d="m15 5 4 4"></path></svg></sc-if><sc-if value="{{t.isMarker}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h9l3-3"></path><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"></path></svg></sc-if><sc-if value="{{t.isEraser}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path><path d="M22 21H7M5 11l9 9"></path></svg></sc-if><sc-if value="{{t.isLasso}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 22a5 5 0 0 1-2-4"></path><path d="M3.3 14A6.8 6.8 0 0 1 2 10c0-4.4 4.5-8 10-8s10 3.6 10 8-4.5 8-10 8a12 12 0 0 1-5-1"></path><path d="M5 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path></svg></sc-if>
+</button></sc-for></div>
+<div style="display:flex;align-items:center;gap:10px">
+<div role="group" aria-label="Colour" style="display:flex;gap:8px;flex:1"><sc-for list="{{colors}}" as="c" hint-placeholder-count="5"><button type="button" aria-label="{{c.label}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="width:32px;height:32px;border-radius:var(--radius-full);border:2px solid var(--surface);background:{{c.value}};box-shadow:{{c.ring}};cursor:pointer;transition:box-shadow var(--dur-fast),transform var(--dur-base) var(--ease-spring);transform:scale({{c.scale}})"></button></sc-for></div>
+<div role="group" aria-label="Thickness" style="display:flex;gap:4px"><sc-for list="{{sizes}}" as="z" hint-placeholder-count="3"><button type="button" aria-label="{{z.label}}" onClick="{{z.pick}}" style="width:36px;height:36px;border:0;border-radius:var(--radius-md);background:{{z.bg}};display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="width:{{z.px}}px;height:{{z.px}}px;border-radius:var(--radius-full);background:var(--ink)"></span></button></sc-for></div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tool: 'pen', color: 'blue', size: 2 }; }
+  renderVals() {
+    const s = this.state;
+    const tools = [['pen', 'Pen'], ['pencil', 'Pencil'], ['marker', 'Highlighter'], ['eraser', 'Eraser'], ['lasso', 'Lasso select']].map(([id, label]) => ({
+      label, pressed: s.tool === id ? 'true' : 'false', bg: s.tool === id ? 'var(--tint-blue)' : 'transparent', fg: s.tool === id ? 'var(--text-accent)' : 'var(--ink-secondary)',
+      isPen: id === 'pen', isPencil: id === 'pencil', isMarker: id === 'marker', isEraser: id === 'eraser', isLasso: id === 'lasso',
+      pick: () => this.setState({ tool: id }) }));
+    const colors = [['ink', 'Ink', 'var(--ink)'], ['blue', 'Blue', 'var(--brand-blue)'], ['warn', 'Orange', 'var(--warn)'], ['green', 'Green', 'var(--success)'], ['red', 'Red', 'var(--danger)']].map(([id, label, value]) => ({
+      label, value, pressed: s.color === id ? 'true' : 'false', ring: s.color === id ? '0 0 0 2px var(--brand-blue)' : '0 0 0 1px var(--line)', scale: s.color === id ? 1.1 : 1, pick: () => this.setState({ color: id }) }));
+    const sizes = [[1, 'Thin', 4], [2, 'Medium', 8], [3, 'Thick', 12]].map(([id, label, px]) => ({ label, px, bg: s.size === id ? 'var(--surface-sunken)' : 'transparent', pick: () => this.setState({ size: id }) }));
+    return { tools, colors, sizes };
+  }
+}
+</script>
+</body>
+</html>

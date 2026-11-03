@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Personal — Motion</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/1cb8d936df66fbbe49cf0ac54da2f100">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="p-app" style="width:1280px;min-height:1040px;padding:48px;display:flex;flex-direction:column;gap:32px">
+<header style="display:flex;flex-direction:column;gap:6px"><h1 class="t-display">Motion</h1><p class="t-meta">Short, transform and opacity only, off under reduced motion. Press Play on each demo.</p></header>
+<section style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px">
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><h2 class="t-label">Durations</h2><div style="display:grid;grid-template-columns:150px 64px 1fr;gap:12px;align-items:center"><span class="kbd" style="justify-self:start">--dur-instant</span><span class="t-body-strong">80ms</span><span style="display:flex;flex-direction:column;gap:4px"><span style="height:6px;width:16%;background:var(--brand-blue);border-radius:var(--radius-xs)"></span><span class="t-meta" style="font-size:12px">Press feedback</span></span></div><div style="display:grid;grid-template-columns:150px 64px 1fr;gap:12px;align-items:center"><span class="kbd" style="justify-self:start">--dur-fast</span><span class="t-body-strong">140ms</span><span style="display:flex;flex-direction:column;gap:4px"><span style="height:6px;width:28%;background:var(--brand-blue);border-radius:var(--radius-xs)"></span><span class="t-meta" style="font-size:12px">Hover, colour, segmented</span></span></div><div style="display:grid;grid-template-columns:150px 64px 1fr;gap:12px;align-items:center"><span class="kbd" style="justify-self:start">--dur-base</span><span class="t-body-strong">200ms</span><span style="display:flex;flex-direction:column;gap:4px"><span style="height:6px;width:40%;background:var(--brand-blue);border-radius:var(--radius-xs)"></span><span class="t-meta" style="font-size:12px">Checkbox, fades, switch</span></span></div><div style="display:grid;grid-template-columns:150px 64px 1fr;gap:12px;align-items:center"><span class="kbd" style="justify-self:start">--dur-slow</span><span class="t-body-strong">280ms</span><span style="display:flex;flex-direction:column;gap:4px"><span style="height:6px;width:56%;background:var(--brand-blue);border-radius:var(--radius-xs)"></span><span class="t-meta" style="font-size:12px">Sheets, toasts, strike, rows</span></span></div><div style="display:grid;grid-template-columns:150px 64px 1fr;gap:12px;align-items:center"><span class="kbd" style="justify-self:start">--dur-deliberate</span><span class="t-body-strong">480ms</span><span style="display:flex;flex-direction:column;gap:4px"><span style="height:6px;width:96%;background:var(--brand-blue);border-radius:var(--radius-xs)"></span><span class="t-meta" style="font-size:12px">Splash, onboarding scenes</span></span></div></div>
+<div class="panel" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start"><h2 class="t-label" style="grid-column:1 / -1">Easings</h2><div style="display:flex;gap:12px;align-items:center"><svg width="64" height="64" viewBox="-2 -20 64 84" aria-hidden="true"><path d="M0 60 L60 60 M0 60 L0 0" stroke="var(--line)" stroke-width="2" fill="none"></path><path d="M0 60 C 16 60, 0 0, 60 0" stroke="var(--brand-blue)" stroke-width="3" fill="none" stroke-linecap="round"></path></svg><span style="display:flex;flex-direction:column;gap:2px"><span class="kbd" style="align-self:flex-start">--ease-standard</span><span class="t-meta" style="font-size:12px">cubic-bezier(.2,0,0,1) · Most changes</span></span></div><div style="display:flex;gap:12px;align-items:center"><svg width="64" height="64" viewBox="-2 -20 64 84" aria-hidden="true"><path d="M0 60 L60 60 M0 60 L0 0" stroke="var(--line)" stroke-width="2" fill="none"></path><path d="M0 60 C 0 60, 12 0, 60 0" stroke="var(--brand-blue)" stroke-width="3" fill="none" stroke-linecap="round"></path></svg><span style="display:flex;flex-direction:column;gap:2px"><span class="kbd" style="align-self:flex-start">--ease-enter</span><span class="t-meta" style="font-size:12px">cubic-bezier(0,0,.2,1) · Arriving</span></span></div><div style="display:flex;gap:12px;align-items:center"><svg width="64" height="64" viewBox="-2 -20 64 84" aria-hidden="true"><path d="M0 60 L60 60 M0 60 L0 0" stroke="var(--line)" stroke-width="2" fill="none"></path><path d="M0 60 C 24 60, 60 0, 60 0" stroke="var(--brand-blue)" stroke-width="3" fill="none" stroke-linecap="round"></path></svg><span style="display:flex;flex-direction:column;gap:2px"><span class="kbd" style="align-self:flex-start">--ease-exit</span><span class="t-meta" style="font-size:12px">cubic-bezier(.4,0,1,1) · Leaving</span></span></div><div style="display:flex;gap:12px;align-items:center"><svg width="64" height="64" viewBox="-2 -20 64 84" aria-hidden="true"><path d="M0 60 L60 60 M0 60 L0 0" stroke="var(--line)" stroke-width="2" fill="none"></path><path d="M0 60 C 20 60, 38 -34, 60 0" stroke="var(--brand-blue)" stroke-width="3" fill="none" stroke-linecap="round"></path></svg><span style="display:flex;flex-direction:column;gap:2px"><span class="kbd" style="align-self:flex-start">--ease-spring</span><span class="t-meta" style="font-size:12px">cubic-bezier(.34,1.56,.64,1) · Confirmations</span></span></div></div>
+</section>
+<section style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px">
+
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Complete a task</h2><button type="button" class="btn btn-secondary btn-sm" onClick="{{toggleTask}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v18l15-9z"></path></svg>Play</button></div>
+<div class="list"><div class="task {{taskRow}}"><button type="button" class="check {{taskCheck}}" aria-label="Mark done" onClick="{{toggleTask}}"><span class="check-box"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.4l2.6 2.6L11 4.4"></path></svg></span></button><div class="task-body"><span class="task-title">Send the draft report</span><span class="task-meta"><span class="meta-item meta-accent"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>2:00 pm</span></span></div></div></div>
+<p class="t-meta" style="font-size:12px">Fill pops with spring (280ms), tick draws (200ms, +60ms), strike grows left to right (280ms), title fades to ink-faint.</p></div>
+
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Bottom sheet</h2><button type="button" class="btn btn-secondary btn-sm" onClick="{{toggleSheet}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v18l15-9z"></path></svg>{{sheetLabel}}</button></div>
+<div style="position:relative;height:220px;border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);border:1px solid var(--line)"><div style="padding:16px;display:flex;flex-direction:column;gap:8px"><span class="t-title3">Today</span><span style="height:40px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--line)"></span><span style="height:40px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--line)"></span></div>
+<sc-if value="{{sheet}}" hint-placeholder-val="{{false}}"><div class="scrim"></div><div class="sheet" style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px"><span class="sheet-handle"></span><span class="t-body-strong">Add a task</span><span style="height:36px;border:1px solid var(--line-control);border-radius:var(--radius-md)"></span><button type="button" class="btn btn-primary btn-sm" onClick="{{toggleSheet}}">Add task</button></div></sc-if></div>
+<p class="t-meta" style="font-size:12px">Slides from 100% with ease-enter (280ms) over a fading scrim; exits in 220ms.</p></div>
+
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Sync status</h2><button type="button" class="btn btn-secondary btn-sm" onClick="{{cycleSync}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v18l15-9z"></path></svg>Next state</button></div>
+<div style="height:120px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);background:var(--canvas)">
+<sc-if value="{{syncOff}}" hint-placeholder-val="{{true}}"><span class="pill-status pill-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 20 20"></path><path d="M5.78 5.78A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.31-.2"></path><path d="M21.53 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7 7 0 0 0 9.18 5.03"></path></svg>Offline · 3 waiting</span></sc-if>
+<sc-if value="{{syncBusy}}" hint-placeholder-val="{{false}}"><span class="sync sync-busy" style="font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>Syncing 3 changes</span></sc-if>
+<sc-if value="{{syncOk}}" hint-placeholder-val="{{false}}"><span class="sync sync-ok" style="font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path><path d="m9 14 2 2 4-4"></path></svg>Synced just now</span></sc-if></div>
+<p class="t-meta" style="font-size:12px">Offline is calm and static. Syncing spins (1s linear). Success pops once with spring.</p></div>
+
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Toast with undo</h2><button type="button" class="btn btn-secondary btn-sm" onClick="{{showToast}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v18l15-9z"></path></svg>Play</button></div>
+<div style="height:120px;display:flex;align-items:flex-end;justify-content:center;padding:12px;border-radius:var(--radius-lg);background:var(--canvas)"><sc-if value="{{toast}}" hint-placeholder-val="{{true}}"><div class="toast" style="width:100%"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Note moved to Trash</span><button type="button" class="toast-action">Undo</button></div></sc-if></div>
+<p class="t-meta" style="font-size:12px">Rises 8px and fades in (280ms, ease-enter). Stays 5s when it has Undo.</p></div>
+
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 class="t-title3">Splash mark</h2><button type="button" class="btn btn-secondary btn-sm" onClick="{{replaySplash}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v18l15-9z"></path></svg>Replay</button></div>
+<div style="height:120px;display:flex;align-items:center;justify-content:center;gap:12px;border-radius:var(--radius-lg);background:var(--brand-navy)"><sc-if value="{{splash}}" hint-placeholder-val="{{true}}"><span class="splash-mark" style="display:flex"><svg class="logo-mark" width="56" height="56" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#3640DB"></rect><g transform="rotate(8 18.5 14)"><rect class="logo-back splash-back" x="12.5" y="6" width="12" height="16" rx="2.5" fill="#B9BEF7"></rect></g><rect x="8" y="9" width="12.5" height="16" rx="2.5" fill="#FFFFFF"></rect><rect x="10.5" y="13" width="7" height="1.8" rx="0.9" fill="#3640DB"></rect><rect x="10.5" y="16.2" width="7" height="1.8" rx="0.9" fill="#3640DB"></rect><rect x="10.5" y="19.4" width="4.5" height="1.8" rx="0.9" fill="#3640DB"></rect></svg></span><span class="splash-word" style="font-size:26px;font-weight:800;letter-spacing:-.02em;color:#fff">Personal</span></sc-if></div>
+<p class="t-meta" style="font-size:12px">Back page swings into its 8° angle while the mark scales 0.86 → 1 (480ms, spring); wordmark follows at +220ms.</p></div>
+
+<div class="panel" style="display:flex;flex-direction:column;gap:14px"><h2 class="t-title3">Press and pages</h2>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-primary">Press me</button><button type="button" class="icon-btn" aria-label="Add"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button><button type="button" class="fab" aria-label="Quick add" style="margin-top:0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button></div>
+<div class="dots" style="padding:8px 0"><sc-for list="{{dots}}" as="d" hint-placeholder-count="3"><button type="button" class="dot-i {{d.cls}}" aria-label="{{d.label}}" onClick="{{d.pick}}" style="border:0;padding:0;cursor:pointer"></button></sc-for></div>
+<p class="t-meta" style="font-size:12px">Buttons scale to 0.97, icon buttons and FAB to 0.94 (80ms). The active page dot stretches to 20px (280ms).</p></div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 1280, "height": 1040}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { task: false, sheet: false, sync: 0, toast: true, splash: true, dot: 0 };
+  }
+  renderVals() {
+    const s = this.state;
+    return {
+      taskRow: s.task ? 'is-done' : '', taskCheck: s.task ? 'is-on' : '',
+      toggleTask: () => this.setState({ task: !this.state.task }),
+      sheet: s.sheet, sheetLabel: s.sheet ? 'Close' : 'Open', toggleSheet: () => this.setState({ sheet: !this.state.sheet }),
+      syncOff: s.sync === 0, syncBusy: s.sync === 1, syncOk: s.sync === 2,
+      cycleSync: () => this.setState({ sync: (this.state.sync + 1) % 3 }),
+      toast: s.toast,
+      showToast: () => { this.setState({ toast: false }); setTimeout(() => this.setState({ toast: true }), 60); },
+      splash: s.splash,
+      replaySplash: () => { this.setState({ splash: false }); setTimeout(() => this.setState({ splash: true }), 60); },
+      dots: [0, 1, 2].map((i) => ({ cls: s.dot === i ? 'is-on' : '', label: 'Page ' + (i + 1), pick: () => this.setState({ dot: i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>
