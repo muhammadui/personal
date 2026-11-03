@@ -7,6 +7,7 @@ import { docPlainText } from "./note-docs"
 
 export { WrongPinError }
 export const MIN_PIN_LENGTH = 4
+export const MAX_PIN_LENGTH = 8
 
 /** Keys of notes unlocked in this session. Forgotten when the app is hidden or reloaded. */
 const unlocked = new Map<string, CryptoKey>()
@@ -48,7 +49,7 @@ async function replaceWithSnapshot(store: Store, noteId: string, snapshot: Uint8
 
 export async function lockNote(store: Store, note: Stored<"notes">, pin: string): Promise<CryptoKey> {
   if (note.locked) throw new Error("Note is already locked")
-  if (pin.length < MIN_PIN_LENGTH) throw new Error(`Use at least ${MIN_PIN_LENGTH} characters`)
+  if (pin.length < MIN_PIN_LENGTH || pin.length > MAX_PIN_LENGTH) throw new Error(`Use ${MIN_PIN_LENGTH} to ${MAX_PIN_LENGTH} digits`)
   const salt = newSalt()
   const key = await deriveNoteKey(pin, salt)
   const state = await readState(store, note.id)
@@ -57,9 +58,10 @@ export async function lockNote(store: Store, note: Stored<"notes">, pin: string)
   // Earlier version-history snapshots are plaintext: blank them (an ordinary synced field
   // write, so the server copy is overwritten too) and move them to Trash.
   const versions = await store.db.note_versions.where("note_id").equals(note.id).toArray()
+  const nowIso = new Date().toISOString()
   for (const v of versions) {
-    if (v.snapshot !== "") await store.update("note_versions", v.id, { snapshot: "" })
-    if (!v.deleted_at) await store.remove("note_versions", v.id)
+    if (v.snapshot === "" && v.deleted_at) continue
+    await store.update("note_versions", v.id, { snapshot: "", ...(v.deleted_at ? {} : { deleted_at: nowIso }) })
   }
   unlocked.set(note.id, key)
   return key

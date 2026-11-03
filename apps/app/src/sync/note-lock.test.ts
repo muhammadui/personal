@@ -8,6 +8,7 @@ import { FakeSyncServer } from "./fake-server"
 import { isEncrypted } from "./note-crypto"
 import { openNoteDoc } from "./note-docs"
 import { lockNote, removeLock, unlockNote, WrongPinError } from "./note-lock"
+import { snapshotNote, versionPreview, versionsFor } from "./note-versions"
 
 const cleanup: (() => Promise<void>)[] = []
 afterEach(async () => {
@@ -104,5 +105,39 @@ describe("locked notes", () => {
     expect(again.doc.getText("t").toString()).toBe("hello")
     expect(server.docs.filter((x) => x.noteId === noteId).every((x) => !isEncrypted(base64ToBytes(x.update)))).toBe(true)
     again.close()
+  }, 30_000)
+
+  it("while locking, no screen ever sees a blank version (regression: 'Unexpected end of array')", async () => {
+    const server = new FakeSyncServer()
+    const d = device(server, "solo")
+    const noteId = await addNote(d.store)
+    const open = openNoteDoc(d.store, noteId)
+    await open.ready
+    open.doc.getText("t").insert(0, "draft")
+    await flush()
+    await snapshotNote(d.store, noteId, open.doc, "manual")
+    open.close()
+    // What the version-history panel reads, checked after every single local write.
+    const seen: string[][] = []
+    d.db.note_versions.hook("updating", () => {
+      queueMicrotask(() => void versionsFor(d.store, noteId).then((vs) => seen.push(vs.map((v) => v.snapshot))))
+    })
+    await lockNote(d.store, (await d.db.notes.get(noteId))!, "12345678")
+    await flush()
+    for (const snapshots of seen) expect(snapshots).not.toContain("")
+    expect(await versionsFor(d.store, noteId)).toEqual([])
+    // A blank snapshot (from another device) is shown as empty, never decoded.
+    expect(versionPreview({ ...(await d.db.note_versions.where("note_id").equals(noteId).first())!, snapshot: "" })).toBe("")
+  }, 30_000)
+
+  it("accepts PINs of 4 to 8 digits and refuses others", async () => {
+    const server = new FakeSyncServer()
+    const d = device(server, "solo")
+    const a = await addNote(d.store)
+    await expect(lockNote(d.store, (await d.db.notes.get(a))!, "123")).rejects.toThrow()
+    await expect(lockNote(d.store, (await d.db.notes.get(a))!, "123456789")).rejects.toThrow()
+    await lockNote(d.store, (await d.db.notes.get(a))!, "87654321")
+    await expect(unlockNote((await d.db.notes.get(a))!, "8765432")).rejects.toBeInstanceOf(WrongPinError)
+    await expect(unlockNote((await d.db.notes.get(a))!, "87654321")).resolves.toBeDefined()
   }, 30_000)
 })

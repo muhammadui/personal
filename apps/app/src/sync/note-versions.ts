@@ -13,7 +13,8 @@ const MAX_SNAPSHOT_BYTES = 3_500_000 // base64 must stay under the 5 MB schema l
 
 export async function versionsFor(store: Store, noteId: string): Promise<Stored<"note_versions">[]> {
   const all = await store.db.note_versions.where("note_id").equals(noteId).toArray()
-  return all.filter((v) => !v.deleted_at).sort((a, b) => b.created_at.localeCompare(a.created_at))
+  // A blank snapshot is a version emptied by locking the note; it has nothing to show.
+  return all.filter((v) => !v.deleted_at && v.snapshot !== "").sort((a, b) => b.created_at.localeCompare(a.created_at))
 }
 
 export async function snapshotNote(store: Store, noteId: string, doc: Y.Doc, reason: "hourly" | "restore" | "manual"): Promise<string | null> {
@@ -37,8 +38,8 @@ export async function maybeHourlySnapshot(store: Store, noteId: string, doc: Y.D
  */
 export async function restoreVersion(store: Store, noteId: string, doc: Y.Doc, version: Stored<"note_versions">, field = "default"): Promise<void> {
   await snapshotNote(store, noteId, doc, "restore")
-  const old = new Y.Doc()
-  Y.applyUpdate(old, base64ToBytes(version.snapshot))
+  const old = versionDoc(version)
+  if (!old) throw new Error("This version is empty")
   const source = old.getXmlFragment(field)
   const target = doc.getXmlFragment(field)
   doc.transact(() => {
@@ -47,8 +48,16 @@ export async function restoreVersion(store: Store, noteId: string, doc: Y.Doc, v
   })
 }
 
-export function versionPreview(version: Stored<"note_versions">): string {
+/** The version's document, or null for a blank snapshot (emptied when the note was locked). */
+export function versionDoc(version: Stored<"note_versions">): Y.Doc | null {
+  if (version.snapshot === "") return null
   const d = new Y.Doc()
   Y.applyUpdate(d, base64ToBytes(version.snapshot))
+  return d
+}
+
+export function versionPreview(version: Stored<"note_versions">): string {
+  const d = versionDoc(version)
+  if (!d) return ""
   return d.getXmlFragment("default").toString().replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160)
 }

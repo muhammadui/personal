@@ -1,7 +1,7 @@
-import { Banner, Button, PinDots, PinPad, Sheet } from "@personal/ui"
+import { Banner, Button, PinDots, PinPad, SegmentedControl, Sheet } from "@personal/ui"
 import { TriangleAlert } from "lucide-react"
 import { useEffect, useState } from "react"
-import { PIN_LENGTH } from "./pin-length"
+import { DEFAULT_PIN_LENGTH, PIN_LENGTHS, type PinLength } from "./pin-length"
 
 type Step = "first" | "again"
 
@@ -12,6 +12,8 @@ export function LockSheet({ open, onClose, onLock }: { open: boolean; onClose: (
   const [pin, setPin] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [length, setLength] = useState<PinLength>(DEFAULT_PIN_LENGTH)
+  const PIN_LENGTH = length
 
   useEffect(() => {
     if (!open) return
@@ -27,7 +29,7 @@ export function LockSheet({ open, onClose, onLock }: { open: boolean; onClose: (
     setFirst(pin)
     setPin("")
     setStep("again")
-  }, [pin, step])
+  }, [pin, step, PIN_LENGTH])
 
   const lock = async () => {
     if (pin !== first) {
@@ -60,6 +62,17 @@ export function LockSheet({ open, onClose, onLock }: { open: boolean; onClose: (
         <h2 className="t-title3">{step === "first" ? "Choose a PIN" : "Enter the PIN again"}</h2>
         <p className="t-meta">{step === "first" ? `Pick ${PIN_LENGTH} digits. You'll need them to open this note on any device.` : "So we know you remember it."}</p>
       </div>
+      {step === "first" ? (
+        <SegmentedControl
+          label="PIN length"
+          value={String(length)}
+          options={PIN_LENGTHS.map((n) => ({ value: String(n), label: `${n} digits` }))}
+          onChange={(v) => {
+            setLength(Number(v) as PinLength)
+            setPin("")
+          }}
+        />
+      ) : null}
       <Banner tone="warn" icon={<TriangleAlert aria-hidden />}>
         If you forget this PIN, the note can't be recovered.
       </Banner>

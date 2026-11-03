@@ -1,4 +1,7 @@
-import { MIN_PIN_LENGTH } from "../../sync/note-lock"
+import { MAX_PIN_LENGTH, MIN_PIN_LENGTH } from "../../sync/note-lock"
 
-/** Locked notes use a 4-digit PIN (PhoneLocked.dc.html), the shortest the lock code accepts. */
-export const PIN_LENGTH = Math.max(4, MIN_PIN_LENGTH)
+/** PIN lengths offered when locking a note. Unlocking accepts any length in this range. */
+export const PIN_LENGTHS = [4, 6, 8] as const
+export type PinLength = (typeof PIN_LENGTHS)[number]
+export const DEFAULT_PIN_LENGTH: PinLength = 6
+export { MAX_PIN_LENGTH, MIN_PIN_LENGTH }

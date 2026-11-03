@@ -1,4 +1,4 @@
-import { Delete } from "lucide-react"
+import { Check, Delete } from "lucide-react"
 import { useEffect } from "react"
 import { cx } from "./cx"
 
@@ -11,6 +11,8 @@ export type PinPadProps = {
   /** Also accept digits, Backspace and Enter from a hardware keyboard. */
   keyboard?: boolean
   onEnter?: (() => void) | undefined
+  /** Shows an OK key in the empty corner; used when the PIN length isn't known in advance. */
+  submitLabel?: string | undefined
   className?: string
 }
 
@@ -28,7 +30,7 @@ export function PinDots({ count, length, className }: { count: number; length: n
 }
 
 /** `.pin-key` grid: 1–9, 0 and Delete (components.md "PIN pad"). */
-export function PinPad({ value, onChange, length, disabled = false, keyboard = true, onEnter, className }: PinPadProps) {
+export function PinPad({ value, onChange, length, disabled = false, keyboard = true, onEnter, submitLabel, className }: PinPadProps) {
   const add = (d: string) => {
     if (!disabled && value.length < length) onChange(value + d)
   }
@@ -64,7 +66,13 @@ export function PinPad({ value, onChange, length, disabled = false, keyboard = t
           {d}
         </button>
       ))}
-      <span />
+      {submitLabel ? (
+        <button type="button" className="pin-key flex items-center justify-center" style={{ background: "transparent" }} aria-label={submitLabel} disabled={disabled || !onEnter} onClick={() => onEnter?.()}>
+          <Check size={24} strokeWidth={2} aria-hidden />
+        </button>
+      ) : (
+        <span />
+      )}
       <button type="button" className="pin-key" disabled={disabled} onClick={() => add("0")}>
         0
       </button>

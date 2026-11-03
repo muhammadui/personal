@@ -4,7 +4,7 @@ import { ChevronLeft, Lock } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import type { Stored } from "../../data/db"
 import { unlockNote, WrongPinError } from "../../sync/note-lock"
-import { PIN_LENGTH } from "./pin-length"
+import { MAX_PIN_LENGTH, MIN_PIN_LENGTH } from "./pin-length"
 
 /** PhoneLocked: the note's title and a PIN pad. Nothing of the body is shown until the PIN is right. */
 export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock: (key: CryptoKey) => void }) {
@@ -18,16 +18,23 @@ export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock
     setPin(next)
   }, [])
 
+  // The PIN can be 4 to 8 digits and its length isn't stored, so the user taps OK (or Enter).
+  const [attempt, setAttempt] = useState<string | null>(null)
+  const submit = useCallback(() => {
+    if (pin.length >= MIN_PIN_LENGTH) setAttempt(pin)
+  }, [pin])
+
   useEffect(() => {
-    if (pin.length < PIN_LENGTH) return
+    if (attempt === null) return
     let live = true
     setBusy(true)
-    unlockNote(note, pin).then(
+    unlockNote(note, attempt).then(
       (key) => {
         if (live) onUnlock(key)
       },
       (e: unknown) => {
         if (!live) return
+        setAttempt(null)
         setBusy(false)
         setPin("")
         if (e instanceof WrongPinError) setError("Wrong PIN. Try again.")
@@ -40,7 +47,7 @@ export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock
     return () => {
       live = false
     }
-  }, [pin, note, onUnlock])
+  }, [attempt, note, onUnlock])
 
   return (
     <div className="-mx-5 -mt-4 flex min-h-[calc(100dvh-128px-env(safe-area-inset-top))] flex-col bg-surface md:mx-auto md:mt-0 md:min-h-0 md:w-full md:max-w-[420px] md:rounded-lg md:border md:border-line">
@@ -56,15 +63,23 @@ export function LockedNote({ note, onUnlock }: { note: Stored<"notes">; onUnlock
         </span>
         <div className="enter enter-1 flex flex-col gap-1.5">
           <h1 className="t-title2">{note.title || "Locked note"}</h1>
-          <p className="t-meta">This note is locked. Enter your {PIN_LENGTH}-digit PIN.</p>
+          <p className="t-meta">This note is locked. Enter your PIN, then tap the check.</p>
         </div>
-        <PinDots count={pin.length} length={PIN_LENGTH} className="enter enter-2" />
+        <PinDots count={pin.length} length={Math.max(MIN_PIN_LENGTH, pin.length)} className="enter enter-2" />
         {error ? (
           <p role="alert" className="field-error" style={{ margin: 0 }}>
             {error}
           </p>
         ) : null}
-        <PinPad value={pin} onChange={change} length={PIN_LENGTH} disabled={busy} className="enter enter-3 mt-auto w-full md:mt-4" />
+        <PinPad
+          value={pin}
+          onChange={change}
+          length={MAX_PIN_LENGTH}
+          disabled={busy}
+          onEnter={pin.length >= MIN_PIN_LENGTH ? submit : undefined}
+          submitLabel="Unlock"
+          className="enter enter-3 mt-auto w-full md:mt-4"
+        />
         <p className="t-meta" style={{ fontSize: 12 }}>
           Forgot the PIN? Locked notes can't be recovered without it.
         </p>

@@ -1,13 +1,12 @@
-import { base64ToBytes } from "@personal/core"
 import { Button, Dialog, EmptyState, Sheet } from "@personal/ui"
 import { ChevronLeft, History, RotateCcw } from "lucide-react"
 import { useMemo, useState } from "react"
-import * as Y from "yjs"
+import type * as Y from "yjs"
 import type { Stored } from "../../data/db"
 import type { Store } from "../../data/store"
 import { useLiveQuery } from "../../data/use-live-query"
 import { docPlainText } from "../../sync/note-docs"
-import { restoreVersion, versionsFor } from "../../sync/note-versions"
+import { restoreVersion, versionDoc, versionsFor } from "../../sync/note-versions"
 import { relativeTime, timeLabel } from "../format"
 import { useNow } from "../hooks/use-now"
 import { useToast } from "../shell/toast-provider"
@@ -18,8 +17,8 @@ type Props = { open: boolean; onClose: () => void; store: Store; noteId: string;
 const REASON: Record<Stored<"note_versions">["reason"], string> = { hourly: "Autosave", restore: "Before a restore", manual: "Saved" }
 
 function versionText(version: Stored<"note_versions">): string {
-  const d = new Y.Doc()
-  Y.applyUpdate(d, base64ToBytes(version.snapshot))
+  const d = versionDoc(version)
+  if (!d) return ""
   const text = docPlainText(d)
   d.destroy()
   return text
@@ -104,7 +103,9 @@ export function VersionHistory({ open, onClose, store, noteId, title, doc, timeZ
                           </del>
                         ),
                       )
-                    : versionText(selected)}
+                    : open
+                      ? versionText(selected)
+                      : null}
                 </p>
                 {diff ? (
                   <span className="t-meta mt-auto flex gap-3">
