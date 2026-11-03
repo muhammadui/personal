@@ -48,6 +48,9 @@ export const noteSchema = z.strictObject({
   pinned: z.boolean(),
   favourite: z.boolean(),
   locked: z.boolean(),
+  /** Locked notes: base64 Argon2id salt and an encrypted check value to verify the PIN (docs/security.md). */
+  lock_salt: opt(z.string().max(100)),
+  lock_check: opt(z.string().max(200)),
   last_opened_at: opt(iso),
 })
 

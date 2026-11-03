@@ -7,7 +7,7 @@ Synced records exist as typed Dexie tables on each device and as rows of the gen
 | --- | --- | --- |
 | `settings` | theme (`system`/`light`/`dark`), timezone (IANA, default `Africa/Lagos`), default_reminder_time (`HH:MM`), week_start (0–6), quiet_hours_start, quiet_hours_end | id = user id; created at sign-up |
 | `folders` | parent_id, name, colour, sort_order | nesting via parent_id |
-| `notes` | folder_id, title, plain_text, colour, pinned, favourite, locked, last_opened_at | plain_text derived from the body for lists and search |
+| `notes` | folder_id, title, plain_text, colour, pinned, favourite, locked, lock_salt, lock_check, last_opened_at | plain_text derived from the body for lists and search; empty when locked. lock_check = the PIN-derived key encrypting a fixed value, to verify the PIN |
 | `note_versions` | note_id, snapshot (base64 Yjs state), reason (`hourly`/`restore`) | phase 1 later |
 | `lists` | name, colour, sort_order, is_inbox | Inbox created at sign-up |
 | `tasks` | list_id, parent_id, note_id, title, notes, due_at, due_has_time, priority (`none`/`low`/`medium`/`high`), status (`open`/`done`), completed_at, flagged, recurrence_rule, series_id, sort_order | parent_id = subtask; series_id groups a recurring series |

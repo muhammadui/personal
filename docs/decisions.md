@@ -4,6 +4,7 @@ Settled choices. Newest first. Do not reverse one without the owner's approval; 
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Locked notes encrypt each Yjs update (AES-GCM, Argon2id key) and still merge; locking compacts all server history for the note into one encrypted snapshot | Supersedes the 'whole-blob LWW' rule: merging stays lossless and the server never keeps plaintext |
 | 2026-11-03 | UI follows the owner's design kit in `docs/design/` (tokens, components, motion, approved screens). Added `lucide-react` and self-hosted fonts (`@fontsource-variable/plus-jakarta-sans`, `@fontsource/jetbrains-mono`) | Owner-approved designs; fonts must work offline in the PWA |
 | 2026-11-03 | Hosting is $0 forever: Cloudflare Workers free plan (static app + API + Durable Objects) and Neon free plan (Postgres, Frankfurt). Supersedes "always-on container host" and "app on Vercel" | Owner budget is $0. Vercel Hobby cron is once a day (±59 min) so reminders cannot fire; Render free sleeps after 15 min; Fly has no free tier. Cloudflare free has Durable Objects, alarms, WebSockets and free static assets |
 | 2026-11-03 | App and API share one origin: `https://notes.muhammadbniu.com` (Worker custom domain). API lives under `/api/*` | First-party cookies (iPhone Safari blocks third-party cookies); no CORS |
