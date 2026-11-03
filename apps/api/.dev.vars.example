@@ -1,0 +1,11 @@
+# Copy to .dev.vars for `pnpm dev`. Generate random values for the secrets.
+APP_URL=http://localhost:5173
+BETTER_AUTH_SECRET=change-me-32-chars-minimum-random
+PASSWORD_PEPPER=change-me-32-chars-minimum-random
+ALLOWED_EMAILS=you@example.com
+# Leave empty to print emails to the console
+RESEND_API_KEY=
+# pnpm --filter api vapid:generate
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_JWK=
+DEV_TRUSTED_ORIGINS=http://localhost:5173,http://localhost:8787

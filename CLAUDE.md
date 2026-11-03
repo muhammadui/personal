@@ -12,13 +12,13 @@ The owner does not write code. You write all of it. The owner reviews plans, run
 
 ## Stack (do not change without asking)
 - pnpm workspaces + Turborepo, TypeScript strict everywhere
-- `apps/app`: React + Vite + TanStack Router + Tailwind. Single-page app. Same bundle is the PWA and the Tauri desktop app (`apps/app/src-tauri`)
-- `apps/api`: Node + Hono + Zod + Drizzle, WebSocket, pg-boss worker
+- `apps/app`: React + Vite + TanStack Router + Tailwind. Single-page app and PWA (desktop/Tauri deferred)
+- `apps/api`: Cloudflare Worker (free plan) + Hono + Zod + Drizzle + Better Auth; `UserHub` Durable Object for WebSocket pokes, reminder alarms and Web Push
 - `apps/site`: Next.js marketing site (later; not part of the app)
 - `packages/core`: shared Zod schemas, types, HLC, sync protocol, sync engine
 - `packages/ui`: shared components
-- Local data: Dexie (IndexedDB), Yjs + y-indexeddb, OPFS for files, MiniSearch
-- Server data: Postgres (Neon, Frankfurt in production; local Docker Postgres in dev)
+- Local data: Dexie (IndexedDB) incl. the Yjs update log (no y-indexeddb, see decisions.md), Yjs, OPFS for files (phase 2), MiniSearch
+- Server data: Postgres (Neon free, Frankfurt, via Hyperdrive in production; local Docker Postgres in dev). Hosting must stay $0 — see docs/decisions.md
 - Tests: Vitest (unit), fast-check (property tests), Playwright (end to end)
 
 ## Non-negotiable rules
@@ -43,12 +43,15 @@ The owner does not write code. You write all of it. The owner reviews plans, run
 - End each task with a short summary for the owner: what changed, how to try it, what to test by hand.
 
 ## Commands
-(Fill these in during task P0-01; keep this list accurate.)
-- `pnpm dev` — app + api in dev mode
-- `pnpm test` — unit and property tests
+First time: `pnpm install`, `pnpm db:up` (Docker Postgres on port 54329), `pnpm db:migrate`, copy `apps/api/.dev.vars.example` to `apps/api/.dev.vars`.
+- `pnpm dev` — app (Vite, http://localhost:5173) + api (wrangler dev, :8787; Vite proxies `/api`)
+- `pnpm test` — unit, property and API tests (API tests need `pnpm db:up`; they create a throwaway `personal_test` database)
+- `pnpm test:convergence` — Gate 1 property test, 5,000 runs
 - `pnpm test:e2e` — Playwright
 - `pnpm typecheck`, `pnpm lint`
-- `pnpm --filter app tauri dev` — desktop app in dev
+- `pnpm deploy` — build the app and deploy the Worker to notes.muhammadbniu.com
+- `pnpm --filter api vapid:generate` — new VAPID key pair
+- Desktop (Tauri) is deferred.
 
 ## Style
 - Functional React components, hooks, no class components.

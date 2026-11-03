@@ -125,7 +125,7 @@ export async function applyPush(sql: Sql, userId: string, raw: unknown, now = Da
       await tx`
         INSERT INTO records (user_id, tbl, id, data, field_hlc, server_version)
         SELECT x.user_id, x.tbl, x.id::uuid, x.data, x.field_hlc, x.server_version
-        FROM jsonb_to_recordset(${JSON.stringify(rows)}::jsonb)
+        FROM jsonb_to_recordset(${JSON.stringify(rows)}::text::jsonb)
           AS x(user_id text, tbl text, id text, data jsonb, field_hlc jsonb, server_version bigint)
         ON CONFLICT (user_id, tbl, id) DO UPDATE
           SET data = EXCLUDED.data, field_hlc = EXCLUDED.field_hlc, server_version = EXCLUDED.server_version`
