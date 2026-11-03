@@ -52,3 +52,26 @@ test("a task added offline on one device reaches another after reconnecting", as
   await laptop.close()
   await phone.close()
 })
+
+test("P0-10: device B shows device A's change within 2 seconds (WebSocket poke)", async ({ browser }) => {
+  const laptop = await browser.newContext()
+  const phone = await browser.newContext()
+  const a = await laptop.newPage()
+  const b = await phone.newPage()
+  await signIn(a)
+  await signIn(b)
+  // Let both devices finish their first sync and open their sockets.
+  await expect(b.getByText(/synced/i).first()).toBeVisible({ timeout: 15_000 })
+  await a.waitForTimeout(1500)
+
+  const title = `Live task ${Date.now()}`
+  await a.getByRole("button", { name: "Task", exact: true }).click()
+  await a.getByPlaceholder("Call mum tomorrow 6pm").fill(`${title} today`)
+  await a.getByRole("button", { name: "Add task" }).click()
+  await expect(a.getByText(title)).toBeVisible()
+  // 500 ms local debounce + push + poke + pull must land well inside 2 s.
+  await expect(b.getByText(title)).toBeVisible({ timeout: 2_000 })
+
+  await laptop.close()
+  await phone.close()
+})
